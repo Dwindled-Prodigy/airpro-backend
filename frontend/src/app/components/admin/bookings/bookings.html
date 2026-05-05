@@ -1,0 +1,51 @@
+<div class="max-w-7xl mx-auto py-8">
+  <div class="flex justify-between items-end mb-8">
+      <div>
+          <h1 class="text-3xl font-black text-slate-900 tracking-tight">Booking Operations</h1>
+          <p class="text-slate-500 font-medium mt-1">Monitor all passenger reservations.</p>
+      </div>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+  </div>
+
+  <!-- Bookings Table -->
+  <div *ngIf="!isLoading" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+              <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200">
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">PNR</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Flight</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">User ID</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Passengers</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Total Fare</th>
+                  </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                  <tr *ngFor="let booking of bookings" class="hover:bg-slate-50/50 transition-colors">
+                      <td class="py-4 px-6 text-sm font-bold text-blue-700">{{ booking.bookingRef }}</td>
+                      <td class="py-4 px-6">
+                          <div class="flex items-center gap-2">
+                              <span class="material-symbols-outlined text-slate-400 text-lg">flight</span>
+                              <span class="text-sm font-bold text-slate-900">{{ booking.flightSchedule?.flight?.flightNumber || 'N/A' }}</span>
+                          </div>
+                      </td>
+                      <td class="py-4 px-6 text-sm font-medium text-slate-600">User #{{ booking.user?.id || 'N/A' }}</td>
+                      <td class="py-4 px-6 text-sm font-medium text-slate-600 flex items-center gap-1">
+                          <span class="material-symbols-outlined text-sm text-slate-400">group</span>
+                          {{ booking.seatsBooked }}
+                      </td>
+                      <td class="py-4 px-6 text-sm font-black text-slate-900 text-right">₹{{ booking.totalAmount | number:'1.0-0' }}</td>
+                  </tr>
+                  <tr *ngIf="bookings.length === 0">
+                      <td colspan="5" class="py-12 text-center text-slate-500 font-medium">
+                          No bookings found.
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>

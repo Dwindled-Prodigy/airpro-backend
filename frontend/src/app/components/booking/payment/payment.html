@@ -1,0 +1,103 @@
+<div class="bg-background min-h-screen py-10">
+    <main class="max-w-7xl mx-auto p-4 lg:py-8 grid grid-cols-12 gap-6 w-full">
+        <!-- Header -->
+        <div class="col-span-12 mb-4">
+            <h1 class="text-3xl font-extrabold text-slate-900 font-headline uppercase tracking-tight">Secure Payment</h1>
+            <p class="text-slate-500 font-medium mt-1">Complete your transaction using a credit or debit card.</p>
+        </div>
+
+        <!-- Forms -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-8">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="material-symbols-outlined text-4xl text-blue-700">credit_card</span>
+                    <div>
+                        <h2 class="font-bold text-lg text-slate-900">Card Details</h2>
+                        <p class="text-sm text-slate-500">We accept all major credit and debit cards.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-6">
+                    <div class="col-span-12">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Card Number*</label>
+                        <div class="relative">
+                            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" 
+                                [ngClass]="{'border-red-500 focus:ring-red-500 bg-red-50': showErrors && !isValidCard()}"
+                                class="w-full border border-slate-300 rounded-md p-3 text-lg font-medium tracking-widest focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none pl-10" [(ngModel)]="cardNumber">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">payments</span>
+                        </div>
+                        <p *ngIf="showErrors && !isValidCard()" class="text-[10px] text-red-500 font-bold mt-1">Please enter a valid 16-digit card number.</p>
+                    </div>
+                    
+                    <div class="col-span-6 md:col-span-4">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Expiry (MM/YY)*</label>
+                        <input type="text" placeholder="MM/YY" maxlength="5" 
+                            [ngClass]="{'border-red-500 focus:ring-red-500 bg-red-50': showErrors && !isValidExpiry()}"
+                            class="w-full border border-slate-300 rounded-md p-3 text-lg font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="expiry">
+                        <p *ngIf="showErrors && !isValidExpiry()" class="text-[10px] text-red-500 font-bold mt-1">Invalid Expiry.</p>
+                    </div>
+                    
+                    <div class="col-span-6 md:col-span-4">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">CVV*</label>
+                        <div class="relative">
+                            <input type="password" placeholder="•••" maxlength="4" 
+                                [ngClass]="{'border-red-500 focus:ring-red-500 bg-red-50': showErrors && !isValidCvv()}"
+                                class="w-full border border-slate-300 rounded-md p-3 text-lg font-medium tracking-widest focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="cvv">
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">help</span>
+                        </div>
+                        <p *ngIf="showErrors && !isValidCvv()" class="text-[10px] text-red-500 font-bold mt-1">Invalid CVV.</p>
+                    </div>
+
+                    <div class="col-span-12">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Name on Card*</label>
+                        <input type="text" placeholder="e.g. JOHN DOE" 
+                            [ngClass]="{'border-red-500 focus:ring-red-500 bg-red-50': showErrors && !nameOnCard}"
+                            class="w-full border border-slate-300 rounded-md p-3 text-lg font-medium focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none uppercase" [(ngModel)]="nameOnCard">
+                    </div>
+                </div>
+
+                <div class="mt-8 flex items-center gap-2 text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                    <span class="material-symbols-outlined">lock</span>
+                    <p class="text-sm font-bold">Your payment information is encrypted and secure.</p>
+                </div>
+                
+                <div *ngIf="paymentError" class="mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    {{ paymentError }}
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="col-span-12 lg:col-span-4">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sticky top-24">
+                <h3 class="font-black text-blue-700 text-xs uppercase mb-4 border-b pb-2">Fare Summary</h3>
+                <div class="space-y-3 text-sm pb-4">
+                    <div class="flex justify-between text-slate-500 font-medium">
+                        <span>Base Fare (x {{ bookingState.passengerCount }})</span>
+                        <span>₹{{ (bookingState.baseFare * bookingState.passengerCount) | number }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 font-medium">
+                        <span>Taxes & Fees</span>
+                        <span>₹{{ (bookingState.tax * bookingState.passengerCount) | number }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 font-medium" *ngIf="bookingState.seatFee > 0">
+                        <span>Seat Selection</span>
+                        <span>₹{{ bookingState.seatFee | number }}</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center border-t pt-4">
+                    <span class="font-black text-xs uppercase text-slate-700">Amount to Pay</span>
+                    <span class="text-3xl font-black text-blue-700">₹{{ totalAmount | number }}</span>
+                </div>
+                
+                <button (click)="processPayment()" [disabled]="isProcessing" class="w-full mt-6 py-4 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                    [ngClass]="isProcessing ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-blue-700 text-white hover:opacity-90 cursor-pointer'">
+                    <span class="material-symbols-outlined" *ngIf="isProcessing">autorenew</span>
+                    <span class="material-symbols-outlined" *ngIf="!isProcessing">lock</span>
+                    {{ isProcessing ? 'Processing Payment...' : 'Pay ₹' + (totalAmount | number) }}
+                </button>
+            </div>
+        </div>
+    </main>
+</div>

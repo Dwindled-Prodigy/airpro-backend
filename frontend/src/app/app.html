@@ -1,0 +1,76 @@
+<!-- navigation -->
+<header class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-50">
+    <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+        <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500 cursor-pointer" routerLink="/">
+            AIRPRO
+        </div>
+        <nav *ngIf="!isAdminRoute" class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+            <a routerLink="/" routerLinkActive="border-blue-700 dark:border-blue-400 font-bold border-b-2 pb-1" [routerLinkActiveOptions]="{exact: true}" class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200 cursor-pointer">Home</a>
+            <a routerLink="/flights" routerLinkActive="border-blue-700 dark:border-blue-400 font-bold border-b-2 pb-1" class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200 cursor-pointer">Flights</a>
+            <a routerLink="/bookings" routerLinkActive="border-blue-700 dark:border-blue-400 font-bold border-b-2 pb-1" class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200 cursor-pointer">Bookings</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+            <div class="relative" id="profile-container">
+                <button class="flex items-center gap-2 p-1 pl-3 h-10 rounded-full hover:bg-slate-100 transition-all border border-outline-variant/20 text-slate-600 hover:text-primary cursor-pointer" title="Account" (click)="toggleProfile()">
+                    <span class="text-xs font-semibold font-body" *ngIf="!isLoggedIn">Login / Sign Up</span>
+                    <span class="text-xs font-semibold font-body" *ngIf="isLoggedIn">{{ currentUser.name }}</span>
+                    <span class="material-symbols-outlined align-middle" data-icon="account_circle">account_circle</span>
+                </button>
+
+                <!-- Profile Popup -->
+                <div class="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-xl ring-1 ring-slate-900/5 z-50 overflow-hidden transition-all" *ngIf="isProfileOpen">
+                    <div class="px-5 py-4 flex items-center gap-4 bg-slate-50/50">
+                        <div class="w-12 h-12 rounded-full border-2 border-blue-700/10 flex items-center justify-center bg-white text-blue-700">
+                            <span class="material-symbols-outlined text-3xl">account_circle</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-manrope text-base font-bold text-slate-900 tracking-tight">{{ currentUser.name }}</span>
+                            <span class="font-body text-xs text-slate-500 font-medium">{{ currentUser.email }}</span>
+                        </div>
+                    </div>
+                    <div class="py-2" *ngIf="!isAdminRoute">
+                        <a routerLink="/profile" class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-all group">
+                            <span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                            <span class="font-body">View Profile</span>
+                        </a>
+                        <a routerLink="/bookings" class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-all group">
+                            <span class="material-symbols-outlined text-[20px]" data-icon="airplane_ticket">airplane_ticket</span>
+                            <span class="font-body">My Bookings</span>
+                        </a>
+                    </div>
+                    <div class="p-4 border-t border-slate-100">
+                        <button (click)="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg font-manrope font-bold text-sm hover:bg-red-600 hover:text-white transition-all duration-200">
+                            <span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow min-h-screen">
+    <router-outlet></router-outlet>
+</main>
+
+<app-auth *ngIf="isAuthModalOpen" (closeModal)="closeAuthModal()"></app-auth>
+
+<!-- bottom -->
+<footer *ngIf="!isAdminRoute" class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+    <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+        <div class="mb-6 md:mb-0">
+            <div class="text-lg font-bold text-slate-900 dark:text-slate-100 cursor-pointer" routerLink="/">
+                AIRPRO
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                © 2026 AIRPRO Airline Management. All rights reserved.
+            </p>
+        </div>
+        <div class="flex space-x-8 font-inter text-xs tracking-wide">
+            <a routerLink="/privacy-policy" class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer">Privacy Policy</a>
+            <a routerLink="/terms" class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer">Terms of Service</a>
+            <a routerLink="/support" class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer">Support</a>
+        </div>
+    </div>
+</footer>

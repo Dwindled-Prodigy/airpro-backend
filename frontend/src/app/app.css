@@ -1,0 +1,17 @@
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c3c6d7;
+    border-radius: 10px;
+}
+
+.glass-panel {
+    background: rgba(250, 248, 255, 0.8);
+    backdrop-filter: blur(16px);
+}

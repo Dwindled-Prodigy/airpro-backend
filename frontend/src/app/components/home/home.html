@@ -1,0 +1,161 @@
+<!-- hero -->
+<section class="relative h-[600px] w-full flex items-center z-30">
+    <div class="absolute inset-0 overflow-hidden z-0 bg-slate-800">
+        <!-- We can point to the assets folder or the spring boot static folder if they share the same origin -->
+        <img alt="Professional commercial aircraft" class="absolute inset-0 w-full h-full object-cover opacity-50"
+             src="/images/index_bg.jpeg" />
+        <div class="absolute inset-0 bg-gradient-to-r from-on-background/60 to-transparent"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
+        <div class="max-w-2xl mb-12">
+            <h1 class="text-display-lg text-white font-extrabold tracking-tight mb-4 leading-tight uppercase text-5xl">
+                Command Your Journey
+            </h1>
+        </div>
+        <div class="bg-surface-container-lowest/90 backdrop-blur-xl p-8 rounded-xl shadow-2xl max-w-5xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <!-- from -->
+                <div class="relative">
+                    <label class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">From</label>
+                    <div class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg focus-within:ring-2 focus-within:ring-surface-tint/50 transition-all bg-slate-200">
+                        <span class="material-symbols-outlined text-outline mr-2" data-icon="flight_takeoff">flight_takeoff</span>
+                        <select class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0 font-medium outline-none cursor-pointer" [(ngModel)]="origin">
+                            <option value="" disabled selected>DEPARTURE</option>
+                            <option *ngFor="let city of availableCities" [value]="city.code">
+                                {{ city.name }} ({{ city.code }})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <!-- to -->
+                <div class="relative">
+                    <label class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">To</label>
+                    <div class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg focus-within:ring-2 focus-within:ring-surface-tint/50 transition-all bg-slate-200">
+                        <span class="material-symbols-outlined text-outline mr-2" data-icon="flight_land">flight_land</span>
+                        <select class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0 font-medium outline-none cursor-pointer" [(ngModel)]="destination">
+                            <option value="" disabled selected>ARRIVAL</option>
+                            <option *ngFor="let city of availableCities" [value]="city.code">
+                                {{ city.name }} ({{ city.code }})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <!-- when -->
+                <div class="relative md:col-span-1">
+                    <label class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Departure Date</label>
+                    <div class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg focus-within:ring-2 focus-within:ring-surface-tint/50 transition-all bg-slate-200">
+                        <span class="material-symbols-outlined text-outline mr-2" data-icon="calendar_today">calendar_today</span>
+                        <input class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0 font-medium outline-none"
+                            type="date" [(ngModel)]="travelDate" [min]="minDate" />
+                    </div>
+                </div>
+
+                <!-- run -->
+                <div>
+                    <button class="w-full bg-blue-700 text-white h-[48px] rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-blue-700/20 cursor-pointer" (click)="handleSearch()">
+                        <span class="material-symbols-outlined text-lg" data-icon="search" *ngIf="!isSearching">search</span>
+                        <span class="material-symbols-outlined text-lg animate-spin" *ngIf="isSearching">autorenew</span>
+                        {{ isSearching ? 'Searching...' : 'Search Flights' }}
+                    </button>
+                </div>
+            </div>
+            
+            <div *ngIf="searchError" class="mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined">error</span>
+                {{ searchError }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Results Display -->
+<section class="max-w-7xl mx-auto px-8 relative z-20 mb-12" *ngIf="searchResults.length > 0">
+    <div class="flex justify-between items-end mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-900 font-headline uppercase">Available Flights</h2>
+            <p class="text-slate-500 font-medium">{{ origin | uppercase }} to {{ destination | uppercase }} • {{ travelDate }}</p>
+        </div>
+    </div>
+    
+    <div class="space-y-4">
+        <!-- Flight Card -->
+        <div *ngFor="let flight of searchResults" class="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden hover:shadow-lg transition-all">
+            <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+                <!-- Flight Info -->
+                <div class="flex items-center gap-4 col-span-1 md:col-span-1 border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0">
+                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-blue-700">
+                        <span class="material-symbols-outlined">flight</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-900">{{ flight.carrierName }}</h3>
+                        <p class="text-sm text-slate-500 font-medium">{{ flight.flightNumber }}</p>
+                    </div>
+                </div>
+                
+                <!-- Timing -->
+                <div class="flex items-center justify-between col-span-1 md:col-span-2 px-0 md:px-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-slate-900">{{ flight.departureTime }}</p>
+                        <p class="text-sm font-bold text-slate-500 uppercase">{{ flight.origin }}</p>
+                    </div>
+                    
+                    <div class="flex-1 px-4 flex flex-col items-center">
+                        <p class="text-xs font-bold text-slate-400 mb-1">Direct</p>
+                        <div class="w-full h-[2px] bg-slate-200 relative">
+                            <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 material-symbols-outlined text-blue-500 bg-white px-1 text-sm">flight</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-slate-900">{{ flight.arrivalTime }}</p>
+                        <p class="text-sm font-bold text-slate-500 uppercase">{{ flight.destination }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seat Classes -->
+            <div class="bg-slate-50 border-t border-slate-100 p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div *ngFor="let seat of flight.seatCategories" 
+                     class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:ring-1 hover:ring-blue-500 transition-all group"
+                     (click)="selectFlight(flight, seat)">
+                    <p class="font-bold text-slate-600 text-sm uppercase mb-1">{{ seat.categoryName }}</p>
+                    <p class="text-xl font-black text-blue-700 mb-2">₹{{ seat.price | number }}</p>
+                    <span class="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700">{{ seat.availableSeats }} seats left</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- items -->
+<section class="max-w-7xl mx-auto px-8 mt-12 relative z-20 mb-12" *ngIf="searchResults.length === 0">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-md flex items-center gap-6 border border-slate-100 hover:shadow-lg transition-all cursor-pointer">
+            <div class="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center text-blue-700">
+                <span class="material-symbols-outlined text-3xl" data-icon="travel_explore">travel_explore</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg text-slate-900">Search Flights</h3>
+                <p class="text-sm text-slate-500">Access global routes and schedules.</p>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md flex items-center gap-6 border border-slate-100 hover:shadow-lg transition-all cursor-pointer" routerLink="/bookings">
+            <div class="bg-indigo-100 w-14 h-14 rounded-full flex items-center justify-center text-indigo-700">
+                <span class="material-symbols-outlined text-3xl" data-icon="receipt_long">receipt_long</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg text-slate-900">View Bookings</h3>
+                <p class="text-sm text-slate-500">Review and manage upcoming trips.</p>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-md flex items-center gap-6 border border-slate-100 hover:shadow-lg transition-all cursor-pointer">
+            <div class="bg-teal-100 w-14 h-14 rounded-full flex items-center justify-center text-teal-700">
+                <span class="material-symbols-outlined text-3xl" data-icon="person_outline">person_outline</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg text-slate-900">User Profile</h3>
+                <p class="text-sm text-slate-500">Manage credentials and loyalty status.</p>
+            </div>
+        </div>
+    </div>
+</section>

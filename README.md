@@ -1,151 +1,141 @@
-# AirPro Flight Booking Backend
+# ✈️ AIRPRO: Enterprise Airline Reservation System
 
-Welcome to the **AirPro** backend repository. This is a robust, production-ready RESTful API built to handle the complex relational data, concurrency, and security required for a modern flight booking platform.
+AIRPRO is a modern, full-stack airline reservation and management system designed to handle the end-to-end flow of flight searches, seat selection, booking operations, and administrative oversight. 
 
-This document serves as the ultimate guide to understanding exactly how this system operates, how the code is structured, and how the data flows. **Anyone reading this will understand the entire backend architecture.**
-
----
-
-## Technology Stack
-* **Java 17** - Core programming language.
-* **Spring Boot 3.x** - Application framework.
-* **Spring Security + JWT** - Role-Based Access Control (RBAC) and stateless authentication.
-* **Spring Data JPA / Hibernate** - ORM for database interactions.
-* **MySQL** - Relational database.
-* **Maven** - Dependency and build management.
-* **Swagger (OpenAPI 3)** - Auto-generated interactive API documentation.
+This document serves as the **Master Architectural Blueprint** for AIRPRO. It contains every detail necessary to understand, maintain, or rebuild the system from scratch.
 
 ---
 
-## Codebase Architecture
+## 🏗️ 1. Technology Stack
 
-The project strictly follows the **Controller-Service-Repository** layered architecture to ensure separation of concerns:
+### **Frontend (Client-Side)**
+*   **Framework:** Angular 19+ (Strictly Standalone Components, no `ngModules`).
+*   **Styling:** Tailwind CSS (Utility-first framework for modern, responsive UI).
+*   **Routing:** Angular Router with nested routes and lazy-loadable patterns.
+*   **State Management:** RxJS (BehaviorSubjects) and Singleton Injectable Services (`BookingStateService`).
+*   **Icons:** Google Material Symbols (Outlined).
 
-* `com.airpro.controller`: The **Entry Points**. These classes listen for HTTP requests (GET, POST), validate incoming JSON payloads, and pass the data down to the services.
-* `com.airpro.service`: The **Brains**. Contains all the business logic. This layer makes decisions, performs calculations, checks if an action is allowed, and handles transactions. 
-* `com.airpro.repository`: The **Data Access Layer**. Interfaces extending `JpaRepository` to fetch or save data to MySQL without writing raw SQL.
-* `com.airpro.entity`: The **Database Models**. Java classes mapped directly to MySQL tables.
-* `com.airpro.dto`: Data Transfer Objects. Wrappers used to strictly control what data is received from the frontend and what data is sent back, ensuring internal database fields are never exposed accidentally.
-* `com.airpro.config`: Configuration classes (Security, JWT, CORS).
-* `com.airpro.exception`: Global error handlers that catch exceptions and return clean JSON error messages.
-
----
-
-## Security & Authentication (JWT + RBAC)
-
-The system uses **Stateless JWT Authentication**. 
-
-1. **Login:** A user sends their email/password to `/auth/login`. The system verifies the credentials against the database and generates a secure String (JWT). This token contains the user's `email` and `role` (USER or ADMIN) cryptographically signed.
-2. **The Filter:** Every single request made to the API must pass through the `JwtFilter`. The filter looks at the `Authorization: Bearer <token>` header, verifies the signature, and reads the user's role.
-3. **Role-Based Access Control (RBAC):** 
-   * Endpoints starting with `/api/admin/**` are strictly locked down by Spring Security (`.hasRole("ADMIN")`). If a normal user tries to access them, they get a `403 Forbidden`.
-   * Endpoints like `/api/flights/search` are open for viewing.
+### **Backend (Server-Side)**
+*   **Framework:** Spring Boot 3.x (Java).
+*   **Database:** MySQL.
+*   **ORM:** Spring Data JPA / Hibernate.
+*   **Security:** Spring Security with stateless JWT (JSON Web Tokens) authentication.
+*   **Serialization:** FasterXML Jackson.
 
 ---
 
-## Database Architecture & The "Dependency Flow"
+## 🗄️ 2. Database Schema & Entities
 
-The database is highly normalized. This means data is split into specialized tables to avoid duplication and prevent impossible scenarios (like booking a flight that doesn't exist). 
+The system revolves around 8 core relational entities, deeply integrated with JPA associations:
 
-Data must be created in this exact order:
+1.  **`User`**: Core identity. Stores `name`, `email`, `password` (BCrypt hashed), `role` (`ROLE_USER`, `ROLE_ADMIN`), and loyalty `category` (`REGULAR`, `SILVER`, `GOLD`).
+2.  **`Carrier`**: Airline companies (e.g., Emirates, Air India). Stores `name`, `discountPercentage`, and global `refundAllowed` policies.
+3.  **`Flight`**: The **Master Route**. Defines a standard journey between an `origin` and `destination`, a `basePrice`, and links to a `Carrier`.
+4.  **`FlightSchedule`**: The actual **Instance** of a flight. Links to a `Flight` and assigns a specific `travelDate`, `departureTime`, and `arrivalTime`.
+5.  **`SeatCategory`**: Enumeration for seat tiers (`ECONOMY`, `PREMIUM_ECONOMY`, `BUSINESS`).
+6.  **`FlightSeatInventory`**: The pricing and availability engine. Links a `FlightSchedule` to a `SeatCategory`, tracking `totalSeats`, `availableSeats`, and the specific `price` for that class on that date.
+7.  **`Booking`**: The finalized reservation. Links a `User`, `FlightSchedule`, and `SeatCategory`. Tracks `seatsBooked`, `totalAmount`, unique `bookingRef` (PNR), and `status` (`CONFIRMED`, `CANCELLED`).
+8.  **`Payment`**: Transaction ledger. Links to a `Booking`, storing `amount`, `paymentMethod`, `transactionId`, and `status`.
 
-### 1. Carrier & Seat Categories (The Foundation)
-You must first define the Airlines (e.g., *Delta*) and the global Seat Categories (e.g., *Economy, First Class*).
-
-### 2. Flight (The Route)
-Represents a geographical route (e.g., *JFK to LAX*). 
-* **Rule:** A Flight cannot exist without belonging to a Carrier.
-
-### 3. Flight Schedule (The Timetable)
-Pins a Route to a specific calendar date and time.
-* **Rule:** You cannot schedule a flight if the generic Route doesn't exist.
-
-### 4. Flight Seat Inventory (The Physical Seats)
-This defines how many seats exist on a specific plane on a specific day, and how much they cost.
-* **Rule:** Links **one Schedule** to **one Seat Category**. (e.g., *The May 10th JFK to LAX flight has 150 Economy seats available for $300 each*).
-
-### 5. Booking (The Transaction)
-The user's reservation. Links a User to a Schedule and Seat Category.
-
-### 6. Payment
-The confirmation of funds. Tied strictly to one Booking.
+> **Critical Serialization Note:** Entities utilize `@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})` to prevent Jackson serialization crashes when encountering Hibernate `FetchType.LAZY` proxy objects.
 
 ---
 
-## The Booking Engine (How it actually works)
+## 🔌 3. Backend API Architecture (Endpoints & Controllers)
 
-The most complex part of the system is the `BookingService`. When a user attempts to book a flight, the system must ensure the plane doesn't get overbooked.
+The backend exposes RESTful APIs wrapped in a standardized `ApiResponse<T>` envelope containing `status`, `message`, and `data`.
 
-1. **Transaction Safety:** The `createBooking` method is annotated with `@Transactional`. This means if *anything* goes wrong during the booking process, the database rolls back completely as if it never happened.
-2. **Inventory Check:** The system queries the `FlightSeatInventory`. If `availableSeats < requestedSeats`, it throws an error immediately.
-3. **Deduction:** If seats are available, the system mathematically deducts the requested seats from the inventory and saves it back to the database.
-4. **Price Snapshot:** The system multiplies the number of seats by the current price of the seat in the inventory, calculating the `totalAmount` for the Booking. This ensures if the admin changes the price tomorrow, this user's booking price doesn't change.
-5. **Reference Generation:** A unique 8-character alphanumeric `bookingRef` is generated.
+### **Auth Operations (`/auth`)**
+*   `POST /auth/register`: Accepts `AuthRequest` (email, password, name, role). Hashes password, saves User.
+*   `POST /auth/login`: Accepts `AuthRequest`. Validates credentials, generates and returns a JWT containing the user's email, name, and role.
 
----
+### **Flight Operations (`/api/flights`)**
+*   `GET /search`: Accepts `origin`, `destination`, `travelDate`.
+    *   *Service Logic:* Queries `FlightScheduleRepository`. Maps entities to `FlightSearchResponse` DTOs, preventing N+1 queries. Fetches linked `FlightSeatInventory` to return a list of available seat classes and their real-time prices.
+    *   *Transaction:* Uses `@Transactional(readOnly = true)` to safely initialize lazy collections.
 
-## Handover Guide: Receiving & Integrating the Frontend
+### **Booking Operations (`/api/bookings`)**
+*   `POST /create`: Accepts `BookingRequest` (userId, flightScheduleId, seatCategoryId, passengerCount, baseFare). Validates inventory, creates PNR, updates available seats, generates `Booking` record.
+*   `GET /user/{userId}`: Retrieves all bookings for a specific customer.
+*   `PUT /{id}/cancel`: Sets booking status to `CANCELLED` and restores seats to `FlightSeatInventory`.
 
-When the frontend team delivers the Angular (or React/Vue) codebase to you, you have two choices for how to integrate and run them together:
-
-### Option A: Run Separately (Development Mode)
-This is the easiest way to test everything locally.
-1. Start your Spring Boot backend so it runs on `http://localhost:8080`.
-2. Open the frontend code in a terminal and run its start command (e.g., `npm start` or `ng serve`). It will run on a port like `http://localhost:4200` or `3000`.
-3. **Why it works:** Because we configured **Global CORS** in `SecurityConfig.java`, your backend allows the frontend running on a different port to successfully make API requests without the browser blocking them.
-
-### Option B: Package Together as a Monolith (Production Mode)
-If you want to package the frontend and backend into **one single runnable file** (so you don't have to start two servers), follow these steps:
-1. Ask the frontend team to "build" their code for production (usually `npm run build` or `ng build`). This creates a `dist/` or `build/` folder filled with HTML, CSS, and JS files.
-2. Copy all the contents of that `dist/` folder.
-3. Paste them into your Spring Boot backend inside this exact folder: `src/main/resources/static/`.
-4. Stop the backend, run `mvn clean install`, and start the backend again.
-5. **The Result:** Now, when you go to `http://localhost:8080` in your browser, Spring Boot will automatically serve the frontend UI, and the UI will communicate with the backend APIs on the exact same port!
+### **Administrative Operations (`/api/admin`)** *[Secured: ROLE_ADMIN]*
+*   `GET /users`, `GET /bookings`, `GET /carriers`, `GET /flights`, `GET /schedules`
+*   `POST /carriers`: Creates a new airline carrier.
+*   `POST /flights`: Creates a new Master Route (`FlightRequest` -> `flightNumber`, `carrierId`, `origin`, `destination`, `basePrice`).
 
 ---
 
-## Frontend Implementation Rules
+## 🛡️ 4. Security & Authentication
 
-The backend returns **every single response** (success or error) in a standardized JSON wrapper:
+### **Backend (`SecurityConfig.java`)**
+*   **CORS:** Configured to allow `*` origins and all HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`).
+*   **FilterChain:** Stateless session policy. `/auth/**` and `/api/flights/search` are `permitAll()`. `/api/admin/**` requires `hasRole("ADMIN")`. Everything else requires authentication.
+*   **JwtFilter:** Intercepts incoming requests. Extracts the Bearer token from the `Authorization` header, decodes it using a secret key, validates expiration, and populates the Spring `SecurityContextHolder`.
 
-```typescript
-export interface ApiResponse<T> {
-  status: number;       // HTTP Status (e.g., 200, 400)
-  message: string;      // Human-readable message
-  data: T;              // The actual payload
-}
-```
-
-**How the frontend connects:**
-1. Send a POST to `http://localhost:8080/auth/login`.
-2. Save `response.data` (the JWT token) to `localStorage`.
-3. Configure an HTTP Interceptor in your frontend framework to attach `Authorization: Bearer <token>` to the headers of all outgoing requests targeting `http://localhost:8080/api/**`.
+### **Frontend (`auth-interceptor.ts`)**
+*   Angular `HttpInterceptorFn` that automatically retrieves `jwt_token` from `localStorage` and appends `Authorization: Bearer <token>` to all outgoing `HttpClient` requests.
 
 ---
 
-## Setup & Run Instructions
+## 💻 5. Frontend Architecture & UI Flow
 
-1. **Prerequisites:** Install Java 17 and MySQL.
-2. **Database:** Create a MySQL database named `airpro`.
-3. **Application Properties:** Ensure `src/main/resources/application.properties` contains your correct MySQL username and password.
-4. **Run the Project:**
-   ```bash
-   mvn clean install
-   mvn spring-boot:run
-   ```
-5. **Explore & Test:** Open `http://localhost:8080/swagger-ui.html` in your browser.
+The Angular application is heavily componentized, utilizing Tailwind CSS for a premium, glassmorphism-inspired aesthetic.
+
+### **State Management**
+*   **`AuthService`**: Manages user sessions using an RxJS `BehaviorSubject<any>`. Parses the JWT payload to instantly inform the UI of the user's name and role (`ADMIN` vs `USER`).
+*   **`BookingStateService`**: An in-memory injectable service acting as a pipeline. It holds the `origin`, `destination`, `travelDate`, `selectedFlight`, `selectedSeatsList`, `passengers` details, and `pricing` data as the user progresses through the multi-step checkout flow.
+
+### **Routing Map (`app.routes.ts`)**
+1.  **`/` (Home Component):**
+    *   Hero section with a dynamic search bar.
+    *   Features `<select>` dropdowns for Departure/Arrival, auto-converting human-readable cities (e.g., "New Delhi") into backend-compatible IATA codes (e.g., "DEL").
+    *   Calls `FlightService.searchFlights()`. Results render as rich cards with dynamic seat class pricing.
+2.  **`/auth` (Auth Modal Component):**
+    *   Tabbed UI for Login / Sign Up. Dispatches to `AuthService`. Handles strict role-based redirects (Admins are pushed directly to `/admin/dashboard`).
+3.  **Checkout Pipeline:**
+    *   **`/booking/seats`**: An interactive 2D aircraft seat map array. Validates seat selections against passenger counts and selected fare classes.
+    *   **`/booking/passengers`**: Dynamic reactive form generating input fields based on the number of required seats.
+    *   **`/booking/payment`**: Simulated checkout gateway summarizing the `BookingStateService` payload.
+    *   **`/booking/confirmation`**: Issues the finalized e-ticket with PNR and QR code visuals.
+4.  **`/admin` (Administrative Layout Module):**
+    *   Features a persistent sidebar navigation shell.
+    *   **`/admin/dashboard`**: High-level statistical overview (Total Users, Revenue, Routes).
+    *   **`/admin/flights` & `/admin/carriers`**: Full management tables with "Add" Modals passing data to `AdminDataService`.
+    *   **`/admin/users` & `/admin/bookings`**: Data grid views to monitor operations.
 
 ---
 
-## Live Demo Script (For Presentations)
+## 🛠️ 6. Core Workflows (How It Actually Works)
 
-If you need to explain this project to stakeholders, follow this script using the Swagger UI:
+### **The Search-to-Checkout Flow**
+1. User selects "DEL" to "BOM" and a Date on `/` (Home).
+2. Angular sends `GET /api/flights/search?origin=DEL&destination=BOM&travelDate=...`.
+3. Backend searches `flight_schedules` where `flight.origin == DEL`. Returns DTO containing flight details and all attached `FlightSeatInventory` objects.
+4. User clicks "Business Class ($500)".
+5. Frontend sets `BookingStateService.selectedFlight` and routes to `/booking/seats`.
+6. User picks seats -> enters passenger info -> submits payment.
+7. Frontend packages this into a JSON `BookingRequest` and hits `POST /api/bookings/create`.
+8. Backend confirms inventory, creates a `Booking` entity, generates a random 6-character PNR (`bookingRef`), and returns it.
+9. UI redirects to `/booking/confirmation` to display the ticket.
 
-1. **Security:** Use `POST /auth/register` to create an `ADMIN` user. Use `POST /auth/login` to retrieve the JWT. Paste the token into Swagger's top green **Authorize** button.
-2. **Data Pipeline:** 
-   * Use `POST /api/admin/carriers` to create an Airline.
-   * Use `POST /api/admin/flights` to create a Route using the Carrier ID.
-   * Use `POST /api/admin/schedules` to set a Date/Time using the Flight ID.
-   * Use `POST /api/admin/inventory` to allocate seats and set prices.
-3. **User Experience:** Use `GET /api/flights/search` to find the flight you just created based on origin, destination, and date.
-4. **The Magic:** Use `POST /api/bookings` to reserve seats. Explain how the system calculates the price and reduces the inventory in real-time. Use `POST /api/payments` to finalize.
+### **The Administrator Flow**
+1. Admin logs in. `AuthService` detects `ROLE_ADMIN` in the JWT payload and routes to `/admin/dashboard`.
+2. Global `app.html` detects the URL contains `/admin` and aggressively hides the standard Header, Footer, and navigation links, revealing only the secure Admin Sidebar.
+3. Admin navigates to Carriers -> creates "Emirates" (`POST /api/admin/carriers`).
+4. Admin navigates to Flights -> creates Route "AI-101" from "DEL" to "BOM" attached to "Emirates" (`POST /api/admin/flights`).
+5. *(Pending Feature)* Admin navigates to Schedules -> assigns "AI-101" to depart on Dec 25th, creating the `FlightSchedule` and automatically generating `FlightSeatInventory` entries so users can actually book it.
+
+---
+
+## 🚀 7. Required Next Steps for Production
+
+To take this application to a fully complete, production-ready state, the following must be implemented:
+
+1.  **Admin Flight Scheduling Interface**: The backend has `FlightSchedule` logic, but the Admin Dashboard lacks a UI to schedule Master Flights. Without this, the system requires direct database insertion to create searchable dates.
+2.  **User Profile & Booking History Views**: Dead links currently exist in the user dropdown for `/profile` and `/bookings`. These components must be generated and hooked to `GET /api/bookings/user/{id}`.
+3.  **Angular Route Guards**: Implement `CanActivate` guards (`AuthGuard`, `AdminGuard`) to structurally prevent unauthorized users from manually navigating to `/admin/**` or `/booking/**` via the URL bar.
+4.  **Edit/Delete Capabilities**: Expand the Admin tables to support `PUT` and `DELETE` requests for full CRUD functionality. 
+
+---
+*Generated by Antigravity AI — Architectural Documentation*

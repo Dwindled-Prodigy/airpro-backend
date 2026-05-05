@@ -1,0 +1,112 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-all duration-300">
+    <!-- Login/Signup Modal -->
+    <div class="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden scale-100 transition-transform duration-300">
+        <!-- Close Button -->
+        <button class="absolute top-4 right-4 z-10 p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" (click)="onClose()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-200">
+            <button class="flex-1 py-5 text-sm font-bold tracking-widest uppercase transition-all cursor-pointer"
+                    [class.border-b-2]="activeTab === 'login'"
+                    [class.border-blue-700]="activeTab === 'login'"
+                    [class.text-blue-700]="activeTab === 'login'"
+                    [class.text-slate-500]="activeTab !== 'login'"
+                    (click)="setTab('login')">
+                Login
+            </button>
+            <button class="flex-1 py-5 text-sm font-bold tracking-widest uppercase transition-all cursor-pointer"
+                    [class.border-b-2]="activeTab === 'signup'"
+                    [class.border-blue-700]="activeTab === 'signup'"
+                    [class.text-blue-700]="activeTab === 'signup'"
+                    [class.text-slate-500]="activeTab !== 'signup'"
+                    (click)="setTab('signup')">
+                Sign Up
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-8">
+            <div class="text-center mb-8">
+                <h2 class="font-headline text-2xl font-extrabold text-slate-900">
+                    {{ activeTab === 'login' ? 'Welcome Back' : 'Join AIRPRO' }}
+                </h2>
+                <p class="text-slate-500 text-sm mt-2">
+                    {{ activeTab === 'login' ? 'Access your navigator dashboard.' : 'Start your journey with precision and luxury.' }}
+                </p>
+            </div>
+
+            <!-- Role Toggle (Login mode only) -->
+            <div class="flex bg-slate-100 p-1 rounded-xl mb-6" *ngIf="activeTab === 'login'">
+                <div class="flex-1 p-2 text-center text-[13px] font-bold cursor-pointer rounded-lg transition-all"
+                     [class.bg-white]="activeRole === 'customer'" [class.shadow]="activeRole === 'customer'" [class.text-blue-700]="activeRole === 'customer'"
+                     (click)="setRole('customer')">Customer</div>
+                <div class="flex-1 p-2 text-center text-[13px] font-bold cursor-pointer rounded-lg transition-all"
+                     [class.bg-white]="activeRole === 'admin'" [class.shadow]="activeRole === 'admin'" [class.text-blue-700]="activeRole === 'admin'"
+                     (click)="setRole('admin')">Administrator</div>
+            </div>
+
+            <!-- Login Form -->
+            <form class="space-y-5" *ngIf="activeTab === 'login'" (ngSubmit)="handleLogin()">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Email Address</label>
+                    <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                           placeholder="Enter Email Address" required type="email" name="email" [(ngModel)]="loginData.email" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Password</label>
+                    <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                           placeholder="Enter Password" required type="password" name="password" [(ngModel)]="loginData.password" />
+                </div>
+                <div class="flex items-center justify-between py-2">
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input class="rounded border-slate-300 text-blue-700 focus:ring-blue-700/20 w-4 h-4 cursor-pointer" type="checkbox" name="remember" [(ngModel)]="loginData.rememberMe" />
+                        <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Remember Me</span>
+                    </label>
+                    <a class="text-sm font-semibold text-blue-700 hover:underline cursor-pointer">Forgot Password?</a>
+                </div>
+                
+                <div *ngIf="errorMsg" class="bg-red-50 text-red-600 text-sm font-bold p-3 rounded-lg text-center">
+                    {{ errorMsg }}
+                </div>
+
+                <button class="w-full py-4 bg-blue-700 text-white font-headline font-bold rounded-lg shadow-lg shadow-blue-700/20 hover:bg-blue-800 active:scale-[0.98] transition-all cursor-pointer" type="submit">
+                    {{ activeRole === 'customer' ? 'Secure Customer Login' : 'Secure Admin Access' }}
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form class="space-y-5" *ngIf="activeTab === 'signup'" (ngSubmit)="handleSignup()">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Full Name</label>
+                    <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                           placeholder="Enter Full Name" required type="text" name="name" [(ngModel)]="signupData.name" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Email Address</label>
+                    <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                           placeholder="Enter Email Address" required type="email" name="email" [(ngModel)]="signupData.email" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Password</label>
+                        <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                               placeholder="Enter Password" required type="password" name="password" [(ngModel)]="signupData.password" />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-600 uppercase tracking-widest">Confirm</label>
+                        <input class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-700/20 focus:border-blue-700 transition-all outline-none"
+                               placeholder="Confirm Password" required type="password" name="confirm" [(ngModel)]="signupData.confirm" />
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-400 text-center leading-relaxed">
+                    By signing up, you agree to AIRPRO's <a class="underline hover:text-slate-600 cursor-pointer" routerLink="/terms">Terms of Service</a> and <a class="underline hover:text-slate-600 cursor-pointer" routerLink="/privacy">Privacy Policy</a>.
+                </p>
+                <button class="w-full py-4 bg-blue-700 text-white font-headline font-bold rounded-lg shadow-lg shadow-blue-700/20 hover:bg-blue-800 active:scale-[0.98] transition-all cursor-pointer" type="submit">
+                    Create Account
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

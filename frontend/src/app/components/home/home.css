@@ -1,0 +1,8 @@
+.suggestions-dropdown {
+    display: none;
+}
+
+input:focus+.suggestions-dropdown,
+.suggestions-dropdown:hover {
+    display: block;
+}

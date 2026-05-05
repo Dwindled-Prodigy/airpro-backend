@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed-variant": "#264191",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7f9fb",
+                        "tertiary-container": "#007b6e",
+                        "surface-tint": "#0053db",
+                        "on-secondary-container": "#1d3989",
+                        "on-primary-fixed": "#00174b",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "outline-variant": "#c3c6d7",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary-fixed": "#00164e",
+                        "surface-container": "#eceef0",
+                        "secondary-container": "#8fa7fe",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "primary-container": "#2563eb",
+                        "on-surface": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-fixed": "#00201c",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#4059aa",
+                        "inverse-primary": "#b4c5ff",
+                        "secondary-fixed": "#dce1ff",
+                        "primary": "#004ac6",
+                        "on-tertiary-container": "#b1fff1",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "background": "#f7f9fb",
+                        "tertiary": "#006056",
+                        "on-primary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+    <!-- Top Navigation Bar (Updated to match SCREEN_10) -->
+    <header class="bg-white dark:bg-slate-900 shadow-sm sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    href="../index.html">Home</a>
+                <a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    href="#">Flights</a>
+                <a class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    href="#">Bookings</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-slate-600 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined align-middle"
+                        data-icon="account_circle">account_circle</span>
+                </button>
+            </div>
+        </div>
+        <div class="bg-slate-100 dark:bg-slate-800 h-px w-full"></div>
+    </header>
+    <main class="flex-grow pt-16 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <!-- Hero Header -->
+        <div class="mb-16">
+            <span class="label-md uppercase tracking-[0.1em] text-primary font-bold mb-4 block">Legal Framework</span>
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter text-on-surface mb-6 leading-tight">Privacy
+                Policy</h1>
+            <p class="text-xl text-on-surface-variant font-medium max-w-2xl leading-relaxed">
+                Last Updated: May 24, 2024. Your security is our primary operational directive.
+            </p>
+        </div>
+        <!-- Privacy Content Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Side Navigation/TOC -->
+            <aside class="lg:col-span-3 hidden lg:block">
+                <div class="sticky top-24 space-y-4">
+                    <h4 class="font-headline font-bold text-sm tracking-wider uppercase text-outline">Sections</h4>
+                    <nav class="flex flex-col gap-3">
+                        <a class="text-primary font-semibold text-sm border-l-2 border-primary pl-4 py-1"
+                            href="#data-collection">Data Collection</a>
+                        <a class="text-on-surface-variant hover:text-primary transition-colors text-sm pl-4 py-1"
+                            href="#security">Operational Security</a>
+                        <a class="text-on-surface-variant hover:text-primary transition-colors text-sm pl-4 py-1"
+                            href="#retention">Data Retention</a>
+                        <a class="text-on-surface-variant hover:text-primary transition-colors text-sm pl-4 py-1"
+                            href="#rights">User Rights</a>
+                    </nav>
+                </div>
+            </aside>
+            <!-- Main Text Content -->
+            <article class="lg:col-span-9 space-y-12">
+                <!-- One Paragraph of Real Professional Content -->
+                <section class="space-y-6" id="data-collection">
+                    <h2 class="text-3xl font-bold tracking-tight text-on-surface">Precision in Data Stewardship</h2>
+                    <p class="text-lg leading-relaxed text-on-surface-variant font-body">
+                        At AIRPRO, we recognize that passenger data is as critical as flight telemetry. We collect only
+                        the essential information required to ensure safe, efficient, and compliant air travel. This
+                        includes identity verification documents, travel history, and preference data, all of which are
+                        processed through encrypted channels and stored in high-availability, secure server
+                        environments. Our commitment to privacy ensures that your travel footprint remains confidential,
+                        utilized only to enhance your flight experience and satisfy international aviation safety
+                        standards.
+                    </p>
+                </section>
+                <!-- Visual Break / Image -->
+                <div class="w-full aspect-video rounded-xl overflow-hidden shadow-sm">
+                    <img alt="Commercial jet wing silhouette against a deep blue sky with soft lens flare"
+                        class="w-full h-full object-cover"
+                        data-alt="Commercial airplane wing soaring above a sea of clouds with deep blue sky and high-end cinematic lighting"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDc1r04aMaA3CfK7yA66OJ67AdH0BBJ_nv69yYOcnLqjpTVwQg7jOJIzys_hCUZz0ekHt2eZDqj5qIdbM33wAkHM4hKInX3Eoh9W86NYQatuFUAKe2oZGihkd9OjwMUEh691eUa-CW76kvSHDev_J1aQ8wBg3VvYOLO2d11nx0Ny9ZNkoIivqUYw1tf5lfB6X9k-oXla8ST68b89QXsp9jmml0VQSQTsWldgZvxzIml7BjfX7OqbqNw8J88bTjMfoyzMKV6UxrPufH" />
+                </div>
+                <!-- Several Paragraphs of Lorem Ipsum -->
+                <section class="space-y-6" id="security">
+                    <h3 class="text-2xl font-bold tracking-tight text-on-surface">Operational Security Protocols</h3>
+                    <p class="text-base leading-relaxed text-on-surface-variant font-body">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit
+                        arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.
+                        Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.
+                        Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus
+                        massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue.
+                    </p>
+                    <p class="text-base leading-relaxed text-on-surface-variant font-body">
+                        Donec congue lacinia dui, a porttitor lectus condimentum laoreet. Nunc eu ullamcorper orci.
+                        Quisque eget odio ac lectus vestibulum faucibus eget in metus. In pellentesque faucibus
+                        vestibulum. Nulla at nulla justo, eget luctus tortor. Nulla facilisi. Duis aliquet egestas purus
+                        in blandit. Curabitur vulputate, ligula lacinia scelerisque tempor, lacus lacus ornare ante, ac
+                        egestas est urna sit amet arcu.
+                    </p>
+                </section>
+                <section class="space-y-6" id="retention">
+                    <h3 class="text-2xl font-bold tracking-tight text-on-surface">Data Retention Policy</h3>
+                    <p class="text-base leading-relaxed text-on-surface-variant font-body">
+                        Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce id
+                        purus. Ut varius tincidunt libero. Phasellus dolor. Maecenas vestibulum mollis diam.
+                        Pellentesque ut neque. Pellentesque habitant morbi tristique senectus et netus et malesuada
+                        fames ac turpis egestas. In ac felis quis tortor malesuada pretium. Pellentesque auctor neque
+                        nec urna. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi.
+                    </p>
+                </section>
+                <section class="space-y-6" id="rights">
+                    <h3 class="text-2xl font-bold tracking-tight text-on-surface">User Information Rights</h3>
+                    <p class="text-base leading-relaxed text-on-surface-variant font-body">
+                        Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Phasellus accumsan
+                        cursus velit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
+                        Curae; Sed aliquam, nisi quis porttitor congue, elit erat euismod orci, ac placerat dolor lectus
+                        quis orci. Phasellus consectetuer vestibulum elit. Aenean tellus metus, bibendum sed, posuere
+                        ac, mattis non, nunc.
+                    </p>
+                    <p class="text-base leading-relaxed text-on-surface-variant font-body">
+                        Mauris ut leo. Cras elementum accumsan leo. In hac habitasse platea dictumst. Vestibulum ante
+                        ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed aliquam, nisi quis
+                        porttitor congue, elit erat euismod orci, ac placerat dolor lectus quis orci.
+                    </p>
+                </section>
+                <!-- Call to Action Box -->
+                <div class="bg-surface-container p-8 rounded-xl border-l-4 border-primary">
+                    <h4 class="text-xl font-bold mb-2">Questions regarding your data?</h4>
+                    <p class="text-on-surface-variant mb-6">Our dedicated Privacy Operations Team is available 24/7 for
+                        flight-related data inquiries.</p>
+                    <button
+                        class="bg-primary text-on-primary px-6 py-3 rounded-full font-bold hover:opacity-90 transition-opacity active:scale-95 duration-150">
+                        Contact Support
+                    </button>
+                </div>
+            </article>
+        </div>
+    </main>
+    <!-- Footer (Updated to match SCREEN_10) -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900 dark:text-slate-100">AIRPRO</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <a class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    href="privacy_policy.html">Privacy Policy</a>
+                <a class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    href="T&C.html">Terms of Service</a>
+                <a class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    href="support.html">Support</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIRPRO | Passenger Details</title>
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#264191",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#00164e",
+                        "secondary": "#4059aa",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#00201c",
+                        "tertiary": "#006056",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "primary": "#004ac6",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#8fa7fe",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-container": "#b1fff1",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-container": "#1d3989",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#434655",
+                        "surface-container-high": "#e6e8ea",
+                        "background": "#f1f3f5",
+                        "surface": "#f1f3f5",
+                        "tertiary-container": "#007b6e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-bright": "#f1f3f5",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f3f5;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #434655;
+            /* on-surface-variant */
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .form-input {
+            border: 1px solid #c3c6d7;
+            /* outline-variant */
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            background-color: #ffffff;
+        }
+
+        .form-input:focus {
+            border-color: #004ac6;
+            /* primary */
+            box-shadow: 0 0 0 2px rgba(0, 74, 198, 0.2);
+        }
+
+        .error-border {
+            border-color: #ba1a1a !important;
+            /* error */
+            background-color: #ffdad6;
+            /* error-container */
+        }
+
+        .error-text {
+            color: #ba1a1a;
+            font-size: 10px;
+            margin-top: 4px;
+            display: none;
+            font-weight: 600;
+        }
+
+        main {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+
+    <!-- navigation -->
+    <header
+        class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500 cursor-pointer"
+                onclick="window.location.href='index.html'">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="window.location.href='index.html'">Home</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Flights</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Bookings</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-slate-600 hover:text-primary transition-colors" onclick="void(0)">
+                    <span class="material-symbols-outlined align-middle"
+                        data-icon="account_circle">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 lg:py-8 grid grid-cols-12 gap-6 w-full">
+
+        <!-- Forms -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <div id="passengerList" class="space-y-6">
+                <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" id="p1">
+                    <div class="bg-gray-50 px-6 py-3 border-b flex justify-between items-center">
+                        <h2 class="font-bold text-gray-700 text-xs uppercase">Passenger 1 (Adult)</h2>
+                        <span
+                            class="text-[9px] bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold uppercase">Primary</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-12 gap-4">
+                        <div class="col-span-12 md:col-span-2"><label class="form-label">Title*</label><select
+                                class="form-input">
+                                <option>Mr.</option>
+                                <option>Mrs.</option>
+                                <option>Ms.</option>
+                            </select></div>
+                        <div class="col-span-12 md:col-span-5"><label class="form-label">First Name*</label><input
+                                type="text" placeholder="First Name" required class="form-input"></div>
+                        <div class="col-span-12 md:col-span-5"><label class="form-label">Last Name*</label><input
+                                type="text" placeholder="Last Name" required class="form-input"></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">Gender*</label><select required
+                                class="form-input">
+                                <option value="">Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">DOB*</label><input type="date"
+                                required class="form-input" onchange="calculateAge(this, 'age1')" id="dob1"></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">Age</label><input type="text"
+                                id="age1" readonly placeholder="Auto-fill" class="form-input bg-gray-50"></div>
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">ID Type*</label><select
+                                class="form-input">
+                                <option>Aadhaar Card</option>
+                                <option>Passport</option>
+                            </select></div>
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">ID Number*</label><input
+                                type="text" placeholder="Enter ID Details" required class="form-input"></div>
+                    </div>
+                </section>
+            </div>
+
+            <button onclick="addPassenger()" id="add-passenger-btn"
+                class="text-blue-700 font-bold text-sm flex items-center gap-2 hover:underline">+ Add Another
+                Passenger</button>
+
+            <!-- Contact -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gray-50 px-6 py-3 border-b">
+                    <h2 class="font-bold text-gray-700 text-xs uppercase">Contact Information</h2>
+                </div>
+                <div class="p-6 grid grid-cols-12 gap-4">
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="form-label">Mobile Number*</label>
+                        <div class="flex">
+                            <span class="bg-gray-100 border border-r-0 px-3 py-2 text-sm rounded-l">+91</span>
+                            <input type="text" id="userPhone" maxlength="10" placeholder="xxxxxxxxxx"
+                                class="form-input rounded-l-none"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                oninput="validatePhone()">
+                        </div>
+                        <p id="phoneError" class="error-text">Enter valid Mobile Number.</p>
+                    </div>
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="form-label">Email Address*</label>
+                        <input type="email" id="userEmail" placeholder="name@example.com" class="form-input"
+                            oninput="validateEmail()">
+                        <p id="emailError" class="error-text">Enter a valid email address.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="col-span-12 lg:col-span-4">
+            <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 sticky top-24">
+                <h3 class="font-black text-primary text-xs uppercase mb-4 border-b pb-2">Fare Summary</h3>
+                <div class="space-y-3 text-sm pb-4">
+                    <div class="flex justify-between text-gray-500"><span>Base Fare (x <span
+                                id="pCountText">1</span>)</span><span id="baseFareText">₹4,250</span></div>
+                    <div class="flex justify-between text-gray-500" id="seatFeeRow" style="display: none;">
+                        <span>Selected Seat (<span id="seatNoText">--</span>)</span><span id="seatFeeText">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-gray-500"><span>Taxes & Fees</span><span
+                            id="taxText">₹899</span></div>
+                </div>
+                <div class="flex justify-between items-center border-t pt-4">
+                    <span class="font-black text-xs uppercase">Grand Total</span>
+                    <span class="text-2xl font-black text-primary" id="totalAmountText">₹5,149</span>
+                </div>
+                <button onclick="finalSubmit()"
+                    class="bg-primary text-white w-full py-4 mt-6 rounded-lg font-black uppercase text-sm hover:opacity-90">Confirm
+                    Booking</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- bottom -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 mt-12">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900 dark:text-slate-100 cursor-pointer"
+                    onclick="window.location.href='index.html'">
+                    AIRPRO</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/privacy_policy.html'">Privacy Policy</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/T&C.html'">Terms of Service</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/support.html'">Support</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let pCount = 0;
+        let BASE_PRICE = 4250;
+        let SEAT_PRICE = 0;
+        let selectedSeatsList = [];
+        const TAX_PRICE = 899;
+
+        // Set max date for DOB on load and read data from URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+
+            // Read parameters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const price = urlParams.get('price');
+            const seats = urlParams.get('seats');
+            const seatPrice = urlParams.get('seatPrice');
+
+            if (price) {
+                BASE_PRICE = parseInt(price.replace(/[₹,]/g, '')) || 4250;
+            }
+
+            if (seats) {
+                selectedSeatsList = seats.split(',');
+                pCount = 0; // Reset and rebuild
+                document.getElementById('passengerList').innerHTML = '';
+
+                selectedSeatsList.forEach((s, i) => {
+                    addPassenger(s);
+                });
+
+                // Disable adding/removing to preserve sync
+                document.getElementById('add-passenger-btn').style.display = 'none';
+            } else {
+                // Default fallback if no seats selected
+                pCount = 0;
+                addPassenger();
+            }
+
+            if (seatPrice) {
+                SEAT_PRICE = parseInt(seatPrice.replace(/[₹,]/g, '')) || 0;
+                document.getElementById('seatNoText').innerText = selectedSeatsList.join(', ');
+                document.getElementById('seatFeeText').innerText = `₹${SEAT_PRICE.toLocaleString('en-IN')}`;
+                document.getElementById('seatFeeRow').style.display = 'flex';
+            }
+
+            updateFare();
+        });
+
+        function validatePhone() {
+            const el = document.getElementById('userPhone'), err = document.getElementById('phoneError');
+            const isValid = /^[6-9]\d{9}$/.test(el.value);
+            el.classList.toggle('error-border', !isValid && el.value !== "");
+            err.style.display = (!isValid && el.value !== "") ? 'block' : 'none';
+            return isValid;
+        }
+
+        function validateEmail() {
+            const el = document.getElementById('userEmail'), err = document.getElementById('emailError');
+            const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+            el.classList.toggle('error-border', !isValid && el.value !== "");
+            err.style.display = (!isValid && el.value !== "") ? 'block' : 'none';
+            return isValid;
+        }
+
+        function calculateAge(dobElement, targetId) {
+            const birthDate = new Date(dobElement.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            if (today.getMonth() < birthDate.getMonth() || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) age--;
+            document.getElementById(targetId).value = age >= 0 ? `${age} Yrs` : "Invalid";
+        }
+
+        function updateFare() {
+            document.getElementById('pCountText').innerText = pCount;
+            document.getElementById('baseFareText').innerText = `₹${(BASE_PRICE * pCount).toLocaleString('en-IN')}`;
+            document.getElementById('taxText').innerText = `₹${(TAX_PRICE * pCount).toLocaleString('en-IN')}`;
+            const total = (BASE_PRICE + TAX_PRICE) * pCount + SEAT_PRICE;
+            document.getElementById('totalAmountText').innerText = `₹${total.toLocaleString('en-IN')}`;
+        }
+
+        function addPassenger(seatLabel = null) {
+            if (pCount >= 9) return alert("Limit: 9 Passengers");
+            pCount++;
+            const id = `p${pCount}`, ageId = `age${pCount}`;
+            const headerText = seatLabel ? `Passenger ${pCount} - Seat ${seatLabel}` : `Passenger ${pCount}`;
+            const removeBtn = seatLabel ? '' : `<button onclick="removePassenger('${id}')" class="text-red-500 text-[10px] font-bold uppercase">Remove</button>`;
+
+            const html = `
+                <section class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6" id="${id}">
+                    <div class="bg-gray-50 px-6 py-3 border-b flex justify-between items-center">
+                        <h2 class="font-bold text-gray-700 text-xs uppercase">${headerText}</h2>
+                        ${removeBtn}
+                    </div>
+                    <div class="p-6 grid grid-cols-12 gap-4">
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">First Name*</label><input type="text" required class="form-input p-firstname"></div>
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">Last Name*</label><input type="text" required class="form-input p-lastname"></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">DOB*</label><input type="date" required class="form-input" onchange="calculateAge(this, '${ageId}')" max="${new Date().toISOString().split('T')[0]}"></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">Age</label><input type="text" id="${ageId}" readonly class="form-input bg-gray-50"></div>
+                        <div class="col-span-12 md:col-span-4"><label class="form-label">Gender*</label><select class="form-input p-gender"><option>Male</option><option>Female</option></select></div>
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">ID Type*</label><select class="form-input"><option>Aadhaar</option><option>Passport</option></select></div>
+                        <div class="col-span-12 md:col-span-6"><label class="form-label">ID Number*</label><input type="text" required class="form-input"></div>
+                    </div>
+                </section>`;
+            document.getElementById('passengerList').insertAdjacentHTML('beforeend', html);
+            updateFare();
+        }
+
+        function removePassenger(id) { document.getElementById(id).remove(); pCount--; updateFare(); }
+        function finalSubmit() {
+            if (validatePhone() && validateEmail()) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const total = document.getElementById('totalAmountText').innerText;
+
+                // Collect Passenger Data
+                const passengers = [];
+                for (let i = 1; i <= pCount; i++) {
+                    const section = document.getElementById(`p${i}`);
+                    if (!section) continue;
+                    
+                    const firstName = section.querySelector('.p-firstname').value;
+                    const lastName = section.querySelector('.p-lastname').value;
+                    const gender = section.querySelector('.p-gender').value;
+                    const seat = selectedSeatsList[i-1] || 'N/A';
+
+                    if (!firstName || !lastName) {
+                        alert(`Please enter name for Passenger ${i}`);
+                        return;
+                    }
+
+                    passengers.push({
+                        name: `${firstName} ${lastName}`,
+                        gender: gender,
+                        seat: seat
+                    });
+                }
+
+                // Prepare Booking Object
+                const bookingData = {
+                    flightNo: urlParams.get('flightNo') || 'AP-101',
+                    route: urlParams.get('route') || 'Unknown Route',
+                    codes: urlParams.get('codes') || '--- → ---',
+                    time: urlParams.get('time') || '--:-- - --:--',
+                    date: urlParams.get('date') || 'TBD',
+                    passengers: passengers,
+                    baseFare: BASE_PRICE,
+                    tax: TAX_PRICE,
+                    total: total
+                };
+
+                // Save to localStorage
+                localStorage.setItem('airpro_pending_booking', JSON.stringify(bookingData));
+
+                const encodedTotal = encodeURIComponent(total);
+                window.location.href = `payment.html?amount=${encodedTotal}`;
+            } else {
+                alert("Please fix contact errors.");
+            }
+        }
+    </script>
+</body>
+
+</html>

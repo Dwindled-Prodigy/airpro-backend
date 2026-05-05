@@ -1,0 +1,64 @@
+<div class="max-w-7xl mx-auto py-8">
+  <div class="mb-8">
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight">Dashboard Overview</h1>
+      <p class="text-slate-500 font-medium mt-1">A high-level view of your airline operations.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+  </div>
+
+  <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Users -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined">group</span>
+              </div>
+          </div>
+          <div>
+              <h3 class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Users</h3>
+              <p class="text-3xl font-black text-slate-900">{{ totalUsers }}</p>
+          </div>
+      </div>
+
+      <!-- Total Bookings -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined">confirmation_number</span>
+              </div>
+          </div>
+          <div>
+              <h3 class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Bookings</h3>
+              <p class="text-3xl font-black text-slate-900">{{ totalBookings }}</p>
+          </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined">payments</span>
+              </div>
+          </div>
+          <div>
+              <h3 class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Revenue</h3>
+              <p class="text-3xl font-black text-slate-900">₹{{ totalRevenue | number:'1.0-0' }}</p>
+          </div>
+      </div>
+
+      <!-- Active Flights -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+                  <span class="material-symbols-outlined">flight_takeoff</span>
+              </div>
+          </div>
+          <div>
+              <h3 class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Routes</h3>
+              <p class="text-3xl font-black text-slate-900">{{ totalFlights }}</p>
+          </div>
+      </div>
+  </div>
+</div>

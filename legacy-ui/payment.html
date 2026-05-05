@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirPro - Payment Portal</title>
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#264191",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#00164e",
+                        "secondary": "#4059aa",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#00201c",
+                        "tertiary": "#006056",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "primary": "#004ac6",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#8fa7fe",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-container": "#b1fff1",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-container": "#1d3989",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#434655",
+                        "surface-container-high": "#e6e8ea",
+                        "background": "#f1f3f5",
+                        "surface": "#f1f3f5",
+                        "tertiary-container": "#007b6e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-bright": "#f1f3f5",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* =========================
+           1. BASE & DESIGN TOKENS
+        ========================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --text-main: #191c1e;
+            --text-muted: #64748b;
+            --bg-main: #f7f9fb;
+            --bg-card: #ffffff;
+            --border-light: #e5e7eb;
+            --radius: 8px;
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 12px 40px rgba(0, 74, 198, 0.08);
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* =========================
+           2. PAYMENT PAGE LAYOUT
+        ========================= */
+        .payments-page {
+            min-height: 100vh;
+            padding-top: 80px;
+            /* Space for fixed header */
+            background:
+                linear-gradient(rgba(247, 249, 251, 0.56), rgba(247, 249, 251, 0.64)),
+                url('images/payment img.jpg') center / cover no-repeat,
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 45%),
+                var(--bg-main);
+        }
+
+        .payments-wrap {
+            min-height: calc(100vh - 140px);
+            padding: 40px 24px;
+        }
+
+        .payment-card {
+            width: 540px;
+            max-width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: calc(var(--radius) + 8px);
+            box-shadow: var(--shadow-soft);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-card-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .payment-card-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .amount-summary {
+            margin: 20px 0;
+            padding: 16px;
+            border: 1px solid rgba(37, 99, 235, 0.25);
+            border-radius: var(--radius);
+            background: linear-gradient(120deg, rgba(37, 99, 235, 0.05), rgba(29, 78, 216, 0.1));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .amount-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .amount-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .pay-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay[hidden] {
+            display: none;
+        }
+
+        .payment-modal {
+            width: 400px;
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .status-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-failure {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 0 20px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- navigation -->
+    <header
+        class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500 cursor-pointer"
+                onclick="window.location.href='index.html'">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="window.location.href='index.html'">Home</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Flights</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Bookings</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-slate-600 hover:text-primary transition-colors" onclick="void(0)">
+                    <span class="material-symbols-outlined align-middle"
+                        data-icon="account_circle">account_circle</span>
+                </button>
+            </div>
+        </div>
+
+    </header>
+
+    <main class="payments-page">
+        <section class="payments-wrap flex-center">
+            <article class="payment-card">
+                <header class="payment-card-header">
+                    <h1>Payment Details</h1>
+                    <p>Complete your booking securely</p>
+                </header>
+
+                <form id="payment-form" novalidate>
+                    <div class="input-group">
+                        <label for="card-number">Card Number</label>
+                        <input class="input" type="text" id="card-number" placeholder="0000 0000 0000 0000">
+                    </div>
+                    <div class="card-grid">
+                        <div class="input-group">
+                            <label for="card-expiry">Expiry (MM/YY)</label>
+                            <input class="input" type="text" id="card-expiry" placeholder="MM/YY">
+                        </div>
+                        <div class="input-group">
+                            <label for="card-cvv">CVV</label>
+                            <input class="input" type="password" id="card-cvv" maxlength="4" placeholder="***">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="card-name">Cardholder Name</label>
+                        <input class="input" type="text" id="card-name" placeholder="John Doe">
+                    </div>
+
+                    <div class="amount-summary">
+                        <span class="amount-label">TOTAL PAYABLE</span>
+                        <span class="amount-value" id="payment-amount">Rs 12,499.00</span>
+                    </div>
+
+                    <button type="submit" class="pay-btn">Confirm & Pay</button>
+                </form>
+            </article>
+        </section>
+    </main>
+
+    <!-- bottom -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900 dark:text-slate-100 cursor-pointer"
+                    onclick="window.location.href='index.html'">
+                    AIRPRO</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/privacy_policy.html'">Privacy Policy</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/T&C.html'">Terms of Service</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/support.html'">Support</button>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="success-modal" hidden>
+        <div class="payment-modal">
+            <div class="status-icon status-success">✓</div>
+            <h2>Payment Success!</h2>
+            <p>Your flight with AirPro is confirmed.</p>
+            <button type="button" id="view-ticket-btn" class="pay-btn" style="margin-top: 20px;">View My Ticket</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="failure-modal" hidden>
+        <div class="payment-modal">
+            <div class="status-icon status-failure">!</div>
+            <h2>Payment Failed</h2>
+            <p id="failure-message">Please check your details.</p>
+            <button type="button" class="pay-btn modal-close" style="margin-top: 20px;">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Set total amount from URL parameters
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount');
+            if (amount) {
+                document.getElementById('payment-amount').innerText = amount;
+            }
+        });
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        const paymentForm = document.getElementById('payment-form');
+        const successModal = document.getElementById('success-modal');
+        const failureModal = document.getElementById('failure-modal');
+
+        // Card Formatting (MM/YY and Spaces)
+        document.getElementById('card-number').addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 16);
+            let chunks = v.match(/.{1,4}/g);
+            e.target.value = chunks ? chunks.join(' ') : v;
+        });
+
+        document.getElementById('card-expiry').addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+            if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+            e.target.value = v;
+        });
+
+        // Validation Logic (Luhn)
+        const isLuhnValid = (num) => {
+            let digits = num.replace(/\D/g, '');
+            let sum = 0; let shouldDouble = false;
+            for (let i = digits.length - 1; i >= 0; i--) {
+                let d = Number(digits[i]);
+                if (shouldDouble) { d *= 2; if (d > 9) d -= 9; }
+                sum += d; shouldDouble = !shouldDouble;
+            }
+            return sum % 10 === 0 && digits.length >= 13;
+        };
+
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const num = document.getElementById('card-number').value;
+            const exp = document.getElementById('card-expiry').value;
+            const cvv = document.getElementById('card-cvv').value;
+            const name = document.getElementById('card-name').value;
+
+            if (!isLuhnValid(num)) {
+                showError("Invalid Card Number.");
+            } else if (!/^\d{2}\/\d{2}$/.test(exp)) {
+                showError("Invalid Expiry (MM/YY).");
+            } else if (cvv.length < 3) {
+                showError("Invalid CVV.");
+            } else if (name.trim().length < 2) {
+                showError("Enter Cardholder Name.");
+            } else {
+                // Finalize Booking
+                const pendingData = localStorage.getItem('airpro_pending_booking');
+                if (pendingData) {
+                    const booking = JSON.parse(pendingData);
+                    const pnr = 'AP' + Math.random().toString(36).substring(2, 7).toUpperCase();
+                    booking.pnr = pnr;
+                    booking.bookingId = 'BK' + Date.now().toString().slice(-8);
+                    
+                    // Save final confirmation
+                    localStorage.setItem('airpro_last_confirmation', JSON.stringify(booking));
+                    
+                    // Show success modal
+                    successModal.hidden = false;
+
+                    // Update button redirect
+                    document.getElementById('view-ticket-btn').onclick = () => {
+                        window.location.href = 'payment_confirmation.html';
+                    };
+                } else {
+                    successModal.hidden = false;
+                }
+            }
+        });
+
+        function showError(msg) {
+            document.getElementById('failure-message').textContent = msg;
+            failureModal.hidden = false;
+        }
+
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                successModal.hidden = true;
+                failureModal.hidden = true;
+            });
+        });
+    </script>
+</body>
+
+</html>

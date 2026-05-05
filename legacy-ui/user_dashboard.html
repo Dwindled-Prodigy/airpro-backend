@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User Dashboard - AIRPRO</title>
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "secondary": "#4059aa",
+                        "surface": "#f1f3f5",
+                        "on-surface": "#191c1e",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "outline": "#737686",
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f3f5;
+        }
+
+        .glass-panel {
+            background: rgba(250, 248, 255, 0.8);
+            backdrop-filter: blur(16px);
+        }
+
+        #profile-popup {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #profile-popup.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Dashboard specific */
+        .dash-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        
+        .dash-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .item-row {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #434655;
+        }
+
+        .item-row:hover {
+            background: #f8fafc;
+            color: #004ac6;
+        }
+
+        /* Role Toggle */
+        .role-toggle-container {
+            display: flex;
+            background: #f1f3f5;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .role-option.active {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            color: #004ac6;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+    <!-- Navigation Header (Synced with index.html) -->
+    <header class="bg-white/60 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 cursor-pointer"
+                onclick="window.location.href='index.html'">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <button class="text-slate-600 hover:text-blue-600 transition-colors" onclick="window.location.href='index.html'">Home</button>
+                <button class="text-slate-600 hover:text-blue-600 transition-colors" onclick="void(0)">Flights</button>
+                <button class="text-slate-600 hover:text-blue-600 transition-colors" onclick="void(0)">Bookings</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="relative" id="profile-container">
+                    <button class="flex items-center gap-2 p-1 pl-3 h-10 rounded-full hover:bg-slate-100 transition-all border border-outline-variant/20 text-slate-600 hover:text-primary" 
+                            onclick="handleProfileClick()" id="profile-trigger" title="Account">
+                        <span id="trigger-label" class="text-xs font-semibold font-body hidden">Login / Sign Up</span>
+                        <span id="trigger-icon" class="material-symbols-outlined align-middle" data-icon="account_circle">account_circle</span>
+                    </button>
+                    
+                    <!-- Profile Popup -->
+                    <div class="absolute right-0 mt-3 w-80 bg-surface-container-lowest rounded-lg shadow-xl ring-1 ring-on-surface/5 z-50 overflow-hidden"
+                        id="profile-popup">
+                        <div class="px-5 py-4 flex items-center gap-4 bg-surface-container-low/50">
+                            <div class="w-12 h-12 rounded-full border-2 border-primary/10 flex items-center justify-center bg-white text-primary">
+                                <span class="material-symbols-outlined text-3xl">account_circle</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span id="popup-name" class="font-manrope text-base font-bold text-on-surface tracking-tight">Guest User</span>
+                                <span id="popup-email" class="font-body text-xs text-on-surface-variant font-medium">customer@airpro.com</span>
+                            </div>
+                        </div>
+                        <div class="py-2">
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group" href="#" onclick="showProfile()">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                                <span class="font-body">View Profile</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group" href="tickets.html">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="airplane_ticket">airplane_ticket</span>
+                                <span class="font-body">My Bookings</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group" href="#">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                                <span class="font-body">Settings</span>
+                            </a>
+                        </div>
+                        <div class="p-4 border-t border-surface-container-high">
+                            <button onclick="handleLogout()"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-error-container text-error rounded-lg font-manrope font-bold text-sm hover:bg-error hover:text-on-error transition-all duration-200">
+                                <span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-6 py-12 max-w-4xl">
+        <!-- Dashboard Home Page -->
+        <div id="homePage" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="material-symbols-outlined text-4xl text-primary" data-icon="waving_hand">waving_hand</span>
+                <h1 class="font-headline text-3xl font-extrabold text-on-surface">Hello, <span id="dash-greeting-name">User</span></h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Order History -->
+                <div class="dash-card">
+                    <h2 class="text-xs font-bold text-outline uppercase tracking-widest mb-4">My Order History</h2>
+                    <div class="space-y-1">
+                        <div class="item-row" onclick="openPage('tickets.html')">
+                            <span class="material-symbols-outlined">airplane_ticket</span>
+                            <span class="font-semibold">My Trips</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Info -->
+                <div class="dash-card">
+                    <h2 class="text-xs font-bold text-outline uppercase tracking-widest mb-4">Your Information</h2>
+                    <div class="space-y-1">
+                        <div class="item-row" onclick="openPage('upgrade.html')">
+                            <span class="material-symbols-outlined">upgrade</span>
+                            <span class="font-semibold">Upgrade Plan</span>
+                        </div>
+                        <div class="item-row" onclick="openPage('status.html')">
+                            <span class="material-symbols-outlined">radar</span>
+                            <span class="font-semibold">Flight Status</span>
+                        </div>
+                        <div class="item-row" onclick="openPage('nominee.html')">
+                            <span class="material-symbols-outlined">group</span>
+                            <span class="font-semibold">My Nominees</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="dash-card md:col-span-2">
+                    <h2 class="text-xs font-bold text-outline uppercase tracking-widest mb-4">AIRPRO Assistance</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="item-row" onclick="openPage('about.html')">
+                            <span class="material-symbols-outlined">info</span>
+                            <span class="font-semibold">About Us</span>
+                        </div>
+                        <div class="item-row" onclick="openPage('footers/support.html')">
+                            <span class="material-symbols-outlined">support_agent</span>
+                            <span class="font-semibold">Contact Support</span>
+                        </div>
+                        <div class="item-row" onclick="openPage('help.html')">
+                            <span class="material-symbols-outlined">quiz</span>
+                            <span class="font-semibold">Help & FAQs</span>
+                        </div>
+                        <div class="item-row" onclick="openPage('footers/T&C.html')">
+                            <span class="material-symbols-outlined">description</span>
+                            <span class="font-semibold">Terms & Conditions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Detail Page -->
+        <div id="profilePage" class="hidden space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div class="dash-card max-w-2xl mx-auto">
+                <div class="flex items-center gap-4 mb-8">
+                    <button class="p-2 h-10 w-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-all" onclick="goBack()">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <h2 class="font-headline text-2xl font-extrabold text-on-surface">My Profile</h2>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+                        <span class="text-sm font-bold text-outline uppercase tracking-tight">Full Name</span>
+                        <span id="prof-name" class="font-semibold text-on-surface">Kiyatoka Ayanokoji</span>
+                    </div>
+                    <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+                        <span class="text-sm font-bold text-outline uppercase tracking-tight">Email Address</span>
+                        <span id="prof-email" class="font-semibold text-on-surface">customer@airpro.com</span>
+                    </div>
+                    <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+                        <span class="text-sm font-bold text-outline uppercase tracking-tight">Phone Number</span>
+                        <span id="prof-phone" class="font-semibold text-on-surface">9876543210</span>
+                    </div>
+                    <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+                        <span class="text-sm font-bold text-outline uppercase tracking-tight">Gender</span>
+                        <span id="prof-gender" class="font-semibold text-on-surface">Male</span>
+                    </div>
+                    <div class="flex justify-between items-center py-4">
+                        <span class="text-sm font-bold text-outline uppercase tracking-tight">Location</span>
+                        <span id="prof-address" class="font-semibold text-on-surface">India</span>
+                    </div>
+                </div>
+
+                <div class="mt-10 flex gap-4">
+                    <button class="flex-1 py-4 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-all" onclick="goBack()">Back to Dashboard</button>
+                    <button class="flex-1 py-4 bg-error-container text-error font-bold rounded-lg hover:bg-error hover:text-white transition-all" onclick="logout()">Log Out Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 mt-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto text-center md:text-left">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900">AIRPRO</div>
+                <p class="text-xs text-slate-500 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <button class="text-slate-500 hover:text-blue-700 transition-colors" onclick="window.location.href='footers/privacy_policy.html'">Privacy Policy</button>
+                <button class="text-slate-500 hover:text-blue-700 transition-colors" onclick="window.location.href='footers/T&C.html'">Terms of Service</button>
+                <button class="text-slate-500 hover:text-blue-700 transition-colors" onclick="window.location.href='footers/support.html'">Support</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal Overlay (for session expiry or login from here) -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-background/40 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300" id="modalOverlay">
+        <div class="relative w-full max-w-md bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden scale-90 transition-transform duration-300" id="authModal">
+            <button class="absolute top-4 right-4 z-10 p-2 text-outline hover:text-on-surface rounded-lg" onclick="closeModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="p-8">
+                <h2 class="font-headline text-2xl font-extrabold text-on-surface text-center mb-8">Session Expired</h2>
+                <div id="roleSelector" class="role-toggle-container">
+                    <div id="role-customer" class="role-option active" onclick="setRole('customer')">Customer</div>
+                    <div id="role-admin" class="role-option" onclick="setRole('admin')">Admin</div>
+                </div>
+                <form class="space-y-4" onsubmit="handleAuth(event, 'login')">
+                    <input id="loginEmail" class="w-full bg-surface-container-low rounded-lg px-4 py-3" placeholder="Enter Email Address" required type="email" />
+                    <input id="loginPass" class="w-full bg-surface-container-low rounded-lg px-4 py-3" placeholder="Enter Password" required type="password" />
+                    <button id="loginSubmitBtn" class="w-full py-4 bg-primary text-white font-bold rounded-lg" type="submit">Log In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-on-background text-surface rounded-lg px-6 py-4 flex items-center gap-3 shadow-2xl translate-y-20 opacity-0 transition-all duration-300" id="toast">
+        <span class="material-symbols-outlined text-tertiary-fixed" id="toastIcon">check_circle</span>
+        <span class="font-semibold" id="toastMessage">Success</span>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let authRole = 'customer';
+        let currentUser = null;
+
+        const DUMMY_USERS = {
+            'customer@airpro.com': { password: 'password123', name: 'Kiyatoka Ayanokoji', role: 'customer', email: 'customer@airpro.com' },
+            'admin@airpro.com': { password: 'password123', name: 'Alex', role: 'admin', email: 'admin@airpro.com' }
+        };
+
+        window.addEventListener('load', () => {
+            const session = localStorage.getItem('airpro_session');
+            if (session) {
+                currentUser = JSON.parse(session);
+                isLoggedIn = true;
+                updateNavbar();
+                updateDashboard();
+            } else {
+                // If not logged in, redirect to index
+                showToast("Please log in first...", true);
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+            }
+        });
+
+        function updateNavbar() {
+            const triggerLabel = document.getElementById('trigger-label');
+            const popupName = document.getElementById('popup-name');
+            const popupEmail = document.getElementById('popup-email');
+
+            if (isLoggedIn && currentUser) {
+                triggerLabel.innerText = currentUser.name;
+                triggerLabel.classList.remove('hidden');
+                popupName.innerText = currentUser.name;
+                popupEmail.innerText = currentUser.email;
+            }
+        }
+
+        function updateDashboard() {
+            if (currentUser) {
+                document.getElementById('dash-greeting-name').innerText = currentUser.name;
+                document.getElementById('prof-name').innerText = currentUser.name;
+                document.getElementById('prof-email').innerText = currentUser.email;
+            }
+        }
+
+        function handleProfileClick() {
+            document.getElementById('profile-popup').classList.toggle('active');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('airpro_session');
+            window.location.href = 'index.html';
+        }
+
+        function logout() {
+            handleLogout();
+        }
+
+        function showProfile() {
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('profilePage').classList.remove('hidden');
+            document.getElementById('profile-popup').classList.remove('active');
+        }
+
+        function goBack() {
+            document.getElementById('profilePage').classList.add('hidden');
+            document.getElementById('homePage').classList.remove('hidden');
+        }
+
+        function openPage(page) {
+            window.location.href = page;
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        // Close popup on click outside
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('profile-popup');
+            const trigger = document.getElementById('profile-trigger');
+            if (popup && popup.classList.contains('active') && !popup.contains(e.target) && !trigger.contains(e.target)) {
+                popup.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

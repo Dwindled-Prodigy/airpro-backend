@@ -1,0 +1,85 @@
+<div class="bg-surface min-h-screen py-10" *ngIf="flight">
+    <main class="max-w-4xl mx-auto px-6 w-full">
+        <header class="text-center mb-12">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl">check_circle</span>
+            </div>
+            <h1 class="font-headline text-4xl font-extrabold tracking-tight text-slate-900 uppercase mb-2">Booking Confirmed!</h1>
+            <p class="text-slate-500 font-medium">Your tickets and itinerary have been sent to your email.</p>
+        </header>
+
+        <!-- Digital Ticket Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 relative overflow-hidden shadow-xl mb-8">
+            <div class="absolute top-0 left-0 w-full h-2 bg-blue-700"></div>
+            
+            <!-- Flight Header -->
+            <div class="p-8 pb-6 flex flex-wrap justify-between items-start gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-100">
+                        <span class="material-symbols-outlined text-2xl">flight_takeoff</span>
+                    </div>
+                    <div>
+                        <span class="text-xs font-black text-blue-700 tracking-widest uppercase">Flight {{ flight.flightNumber }}</span>
+                        <h3 class="font-headline text-2xl font-bold text-slate-900">{{ flight.carrierName }}</h3>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">PNR Number</p>
+                    <p class="text-2xl font-black text-slate-900 tracking-wider">{{ pnr }}</p>
+                </div>
+            </div>
+
+            <!-- Route Info -->
+            <div class="px-8 py-6 bg-slate-50 border-y border-slate-100 grid grid-cols-3 gap-4 items-center">
+                <div class="text-center">
+                    <p class="font-headline text-3xl font-bold uppercase">{{ flight.origin }}</p>
+                    <p class="text-sm font-bold text-slate-500 mt-1">{{ flight.departureTime }}</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-full max-w-[120px] h-[2px] bg-blue-300 relative">
+                        <span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-700 bg-slate-50 px-2 text-xl rotate-90">flight</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 mt-3">{{ flight.travelDate }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="font-headline text-3xl font-bold uppercase">{{ flight.destination }}</p>
+                    <p class="text-sm font-bold text-slate-500 mt-1">{{ flight.arrivalTime }}</p>
+                </div>
+            </div>
+
+            <!-- Passenger Info -->
+            <div class="p-8">
+                <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Passenger Manifest</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div *ngFor="let p of passengers" class="flex items-center justify-between p-4 border border-slate-100 rounded-xl bg-white shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400 text-3xl">person</span>
+                            <div>
+                                <p class="font-bold text-slate-900">{{ p.title }} {{ p.firstName | uppercase }} {{ p.lastName | uppercase }}</p>
+                                <p class="text-xs font-semibold text-slate-500">{{ p.idType }} • {{ p.age }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seat</p>
+                            <p class="font-black text-blue-700 text-lg">{{ p.seat }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 p-4 text-center border-t border-blue-100 flex justify-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ pnr }}" alt="QR Code" class="w-24 h-24 mix-blend-multiply opacity-80" />
+            </div>
+        </div>
+        
+        <div class="flex justify-center mt-8 gap-4">
+            <button class="px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined">download</span> Download PDF
+            </button>
+            <button (click)="finish()" class="px-6 py-3 bg-blue-700 text-white font-bold rounded-lg shadow-md hover:bg-blue-800 transition-all">
+                Return to Home
+            </button>
+        </div>
+    </main>
+</div>

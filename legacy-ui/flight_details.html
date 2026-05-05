@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AIRPRO | Flight Details</title>
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#264191",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#00164e",
+                        "secondary": "#4059aa",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#00201c",
+                        "tertiary": "#006056",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "primary": "#004ac6",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#8fa7fe",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-container": "#b1fff1",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-container": "#1d3989",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#434655",
+                        "surface-container-high": "#e6e8ea",
+                        "background": "#f1f3f5",
+                        "surface": "#f1f3f5",
+                        "tertiary-container": "#007b6e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-bright": "#f1f3f5",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f3f5;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .flight-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flight-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 74, 198, 0.15);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+    <!-- navigation -->
+    <header
+        class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500 cursor-pointer"
+                onclick="window.location.href='index.html'">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="window.location.href='index.html'">Home</button>
+                <button
+                    class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                    onclick="void(0)">Flights</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Bookings</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-slate-600 hover:text-primary transition-colors" onclick="void(0)">
+                    <span class="material-symbols-outlined align-middle"
+                        data-icon="account_circle">account_circle</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-8 py-12 w-full">
+        <!-- Header -->
+        <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight text-on-surface uppercase mb-2">Available Flights</h1>
+                <p class="text-on-surface-variant font-medium">Select a flight to continue with your booking.</p>
+            </div>
+
+            <!-- Sort Filter -->
+            <div
+                class="flex items-center gap-4 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-sm border border-outline-variant/20">
+                <span class="material-symbols-outlined text-outline text-xl">sort</span>
+                <select id="sort-select" onchange="handleSort()"
+                    class="bg-transparent border-none text-sm font-bold text-on-surface-variant focus:ring-0 cursor-pointer outline-none min-w-[140px]">
+                    <option value="none">Sort By</option>
+                    <option value="date-asc">Date</option>
+                    <option value="time-asc">Time</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="results">
+            <!-- Loading placeholder logic -->
+            <div class="col-span-full py-20 text-center text-outline-variant animate-pulse">
+                <span class="material-symbols-outlined text-6xl block mb-4">search</span>
+                <p class="font-bold">Searching for best routes...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- bottom -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900 dark:text-slate-100 cursor-pointer"
+                    onclick="window.location.href='index.html'">
+                    AIRPRO</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/privacy_policy.html'">Privacy Policy</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/T&C.html'">Terms of Service</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/support.html'">Support</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Full Indian Cities Roster
+        const indianCities = [
+            { code: 'DEL', city: 'Delhi' }, { code: 'BOM', city: 'Mumbai' }, { code: 'BLR', city: 'Bengaluru' },
+            { code: 'MAA', city: 'Chennai' }, { code: 'CCU', city: 'Kolkata' }, { code: 'HYD', city: 'Hyderabad' },
+            { code: 'COK', city: 'Kochi' }, { code: 'AMD', city: 'Ahmedabad' }, { code: 'PNQ', city: 'Pune' },
+            { code: 'GOI', city: 'Goa' }, { code: 'JAI', city: 'Jaipur' }, { code: 'LKO', city: 'Lucknow' },
+            { code: 'IXC', city: 'Chandigarh' }, { code: 'PAT', city: 'Patna' }, { code: 'GAU', city: 'Guwahati' },
+            { code: 'BHO', city: 'Bhopal' }, { code: 'NAG', city: 'Nagpur' }, { code: 'VNS', city: 'Varanasi' },
+            { code: 'IXB', city: 'Bagdogra' }, { code: 'SXR', city: 'Srinagar' }, { code: 'TRV', city: 'Thiruvananthapuram' },
+            { code: 'CJB', city: 'Coimbatore' }, { code: 'IXM', city: 'Madurai' }, { code: 'RPR', city: 'Raipur' },
+            { code: 'BBI', city: 'Bhubaneswar' }, { code: 'VGA', city: 'Vijayawada' }, { code: 'VTZ', city: 'Visakhapatnam' },
+            { code: 'IXJ', city: 'Jammu' }, { code: 'IDR', city: 'Indore' }, { code: 'ATQ', city: 'Amritsar' },
+            { code: 'UDR', city: 'Udaipur' }
+        ];
+
+        const times = [
+            { slot: '06:00 - 08:30', label: 'Morning' },
+            { slot: '14:20 - 16:50', label: 'Afternoon' },
+            { slot: '21:00 - 23:30', label: 'Evening' }
+        ];
+
+        const flights = [];
+
+        function generateDummyData() {
+            const today = new Date();
+            const flightNumbers = ['AP', 'AI', '6E', 'UK', 'SG', 'QP'];
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            // Generate for next 10 days (to cover 31/3 to 3/4)
+            for (let d = 0; d < 10; d++) {
+                const date = new Date();
+                date.setDate(today.getDate() + d);
+                
+                // DD Mon YYYY format to match index.html search format
+                const dayStr = String(date.getDate()).padStart(2, '0');
+                const monthStr = monthNames[date.getMonth()];
+                const yearStr = date.getFullYear();
+                const dateString = `${dayStr} ${monthStr} ${yearStr}`;
+
+                // We'll pair major hubs with other cities
+                const hubs = indianCities.slice(0, 10); // More hubs for more variety
+
+                hubs.forEach(from => {
+                    indianCities.forEach(to => {
+                        if (from.code === to.code) return;
+
+                        // Generate 3-5 flights per route per day
+                        const flightCount = Math.floor(Math.random() * 3) + 3;
+
+                        for (let i = 0; i < flightCount; i++) {
+                            // Realistic time distribution: Early, Mid, Late
+                            let hour;
+                            if (i === 0) hour = Math.floor(Math.random() * 4) + 5; // 5AM - 9AM
+                            else if (i === 1) hour = Math.floor(Math.random() * 6) + 11; // 11AM - 5PM
+                            else hour = Math.floor(Math.random() * 4) + 18; // 6PM - 10PM
+
+                            const minute = Math.floor(Math.random() * 12) * 5; // Every 5 mins
+                            const duration = Math.floor(Math.random() * 180) + 90; // 1.5h to 4.5h
+
+                            const departure = new Date(date);
+                            departure.setHours(hour, minute, 0, 0);
+
+                            const arrival = new Date(departure.getTime() + duration * 60000);
+
+                            const depStr = `${departure.getHours().toString().padStart(2, '0')}:${departure.getMinutes().toString().padStart(2, '0')}`;
+                            const arrStr = `${arrival.getHours().toString().padStart(2, '0')}:${arrival.getMinutes().toString().padStart(2, '0')}`;
+
+                            const flightNo = `${flightNumbers[Math.floor(Math.random() * flightNumbers.length)]}-${Math.floor(Math.random() * 900) + 100}`;
+                            const isBusiness = (Math.random() > 0.7);
+                            const priceVal = isBusiness ? (Math.floor(Math.random() * 5000) + 10000) : (Math.floor(Math.random() * 3000) + 3500);
+
+                            flights.push({
+                                id: flights.length + 1,
+                                flightNo: flightNo,
+                                route: `${from.city} → ${to.city}`,
+                                codes: `${from.code} → ${to.code}`,
+                                time: `${depStr} - ${arrStr}`,
+                                duration: `${Math.floor(duration / 60)}h ${duration % 60}m`,
+                                date: dateString,
+                                timestamp: departure.getTime(),
+                                price: `₹${priceVal.toLocaleString('en-IN')}`,
+                                type: isBusiness ? 'Business' : 'Economy'
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        function handleSort() {
+            const criteria = document.getElementById('sort-select').value;
+            if (criteria === 'none') return;
+
+            if (criteria === 'date-asc') {
+                // Sorting by Date first, then Time
+                flights.sort((a, b) => a.timestamp - b.timestamp);
+            } else if (criteria === 'time-asc') {
+                // Sorting by Time regardless of date
+                flights.sort((a, b) => {
+                    const timeA = new Date(a.timestamp).getHours() * 60 + new Date(a.timestamp).getMinutes();
+                    const timeB = new Date(b.timestamp).getHours() * 60 + new Date(b.timestamp).getMinutes();
+                    return timeA - timeB;
+                });
+            }
+            renderFlights();
+        }
+
+        function renderFlights() {
+            const results = document.getElementById('results');
+            const title = document.querySelector('h1');
+            const subtitle = document.querySelector('p');
+
+            if (flights.length === 0) generateDummyData();
+
+            // Read URL Parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from');
+            const to = urlParams.get('to');
+            const date = urlParams.get('date');
+
+            let filtered = flights;
+
+            if (from && to && date) {
+                filtered = flights.filter(f =>
+                    f.codes === `${from} → ${to}` && f.date === date
+                );
+
+                // Update Header
+                title.innerText = `${from} to ${to}`;
+                subtitle.innerText = `Flights available on ${date}`;
+            }
+
+            if (filtered.length === 0) {
+                results.innerHTML = `
+                    <div class="col-span-full py-24 text-center text-outline-variant">
+                        <span class="material-symbols-outlined text-6xl block mb-4">error_outline</span>
+                        <h3 class="text-xl font-bold text-on-surface mb-2">No Flights Found</h3>
+                        <p class="text-sm max-w-md mx-auto">We couldn't find any flights matching your specific search. Try checking a different date or choosing a major hub like Mumbai (BOM) or Delhi (DEL).</p>
+                        <button onclick="window.location.href='index.html'" class="mt-8 px-6 py-2 bg-primary text-white rounded-full font-bold hover:opacity-90 transition-all">Back to Search</button>
+                    </div>
+                `;
+                return;
+            }
+
+            results.innerHTML = filtered.slice(0, 300).map(f => `
+                <div class="flight-card bg-surface-container-lowest p-8 rounded-xl shadow-md border border-white hover:border-primary/20 cursor-pointer group flex flex-col justify-between" 
+                    onclick="window.location.href='seat_selection.html?flightNo=${encodeURIComponent(f.flightNo)}&route=${encodeURIComponent(f.route)}&codes=${encodeURIComponent(f.codes)}&time=${encodeURIComponent(f.time)}&date=${encodeURIComponent(f.date)}&price=${encodeURIComponent(f.price)}'">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="bg-primary-fixed w-12 h-12 rounded-full flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-2xl">flight_takeoff</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-surface-container px-2 py-1 rounded text-on-surface-variant block mb-1">${f.type}</span>
+                                <span class="text-[10px] font-black text-primary uppercase tracking-tighter">${f.date}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-bold text-outline uppercase tracking-wider">${f.flightNo}</span>
+                            <span class="h-1 w-1 bg-outline-variant rounded-full"></span>
+                            <span class="text-[10px] font-medium text-on-surface-variant">${f.duration}</span>
+                        </div>
+                        <h3 class="text-xl font-black text-on-surface mb-1">${f.route}</h3>
+                        <p class="text-outline font-bold text-[10px] tracking-widest mb-3">${f.codes}</p>
+                        <p class="text-on-surface-variant font-medium text-sm mb-4">${f.time}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-6 border-t border-outline-variant/10">
+                        <span class="text-2xl font-black text-primary">${f.price}</span>
+                        <div class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize display
+        setTimeout(renderFlights, 800);
+    </script>
+</body>
+
+</html>

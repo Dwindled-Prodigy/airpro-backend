@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AIRPRO Airline Management System</title>
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <!-- icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#264191",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-secondary-fixed": "#00164e",
+                        "secondary": "#4059aa",
+                        "tertiary-fixed-dim": "#4fdbc8",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary-fixed": "#00201c",
+                        "tertiary": "#006056",
+                        "tertiary-fixed": "#71f8e4",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "primary": "#004ac6",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#737686",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#8fa7fe",
+                        "on-tertiary-fixed-variant": "#005048",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "on-tertiary-container": "#b1fff1",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#b4c5ff",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-container": "#1d3989",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#434655",
+                        "surface-container-high": "#e6e8ea",
+                        "background": "#f1f3f5",
+                        "surface": "#f1f3f5",
+                        "tertiary-container": "#007b6e",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary-fixed": "#00174b",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-bright": "#f1f3f5",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL'0, 'wght'400, 'GRAD'0, 'opsz'24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f3f5;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        /* search logic */
+        .suggestions-dropdown {
+            display: none;
+        }
+
+        input:focus+.suggestions-dropdown,
+        .suggestions-dropdown:hover {
+            display: block;
+        }
+
+        /* auth modal and popup styles */
+        .glass-panel {
+            background: rgba(250, 248, 255, 0.8);
+            backdrop-filter: blur(16px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c3c6d7;
+            border-radius: 10px;
+        }
+
+        #profile-popup {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #profile-popup.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Segmented Control for Role Toggle */
+        .role-toggle-container {
+            display: flex;
+            background: #f1f3f5;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .role-option.active {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            color: #004ac6;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+    <!-- navigation -->
+    <header
+        class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60 sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-black tracking-tighter text-blue-700 dark:text-blue-500 cursor-pointer"
+                onclick="void(0)">
+                AIRPRO
+            </div>
+            <nav class="hidden md:flex items-center space-x-8 font-manrope tracking-tight font-medium text-sm">
+                <button
+                    class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                    onclick="void(0)">Home</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Flights</button>
+                <button
+                    class="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors duration-200"
+                    onclick="void(0)">Bookings</button>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="relative" id="profile-container">
+                    <button
+                        class="flex items-center gap-2 p-1 pl-3 h-10 rounded-full hover:bg-slate-100 transition-all border border-outline-variant/20 text-slate-600 hover:text-primary"
+                        onclick="handleProfileClick()" id="profile-trigger" title="Account">
+                        <span id="trigger-label" class="text-xs font-semibold font-body hidden">Login / Sign Up</span>
+                        <span id="trigger-icon" class="material-symbols-outlined align-middle"
+                            data-icon="account_circle">account_circle</span>
+                    </button>
+
+                    <!-- Profile Popup (Customer Dashboard style) -->
+                    <div class="absolute right-0 mt-3 w-80 bg-surface-container-lowest rounded-lg shadow-xl ring-1 ring-on-surface/5 z-50 overflow-hidden"
+                        id="profile-popup">
+                        <div class="px-5 py-4 flex items-center gap-4 bg-surface-container-low/50">
+                            <div
+                                class="w-12 h-12 rounded-full border-2 border-primary/10 flex items-center justify-center bg-white text-primary">
+                                <span class="material-symbols-outlined text-3xl">account_circle</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span id="popup-name"
+                                    class="font-manrope text-base font-bold text-on-surface tracking-tight">Guest
+                                    User</span>
+                                <span id="popup-email"
+                                    class="font-body text-xs text-on-surface-variant font-medium">customer@airpro.com</span>
+                            </div>
+                        </div>
+                        <div class="py-2">
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group"
+                                href="user_dashboard.html">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                                <span class="font-body">View Profile</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group"
+                                href="tickets.html">
+                                <span class="material-symbols-outlined text-[20px]"
+                                    data-icon="airplane_ticket">airplane_ticket</span>
+                                <span class="font-body">My Bookings</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group"
+                                href="#">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="loyalty">loyalty</span>
+                                <span class="font-body">Loyalty Program</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-5 py-3 text-sm font-medium text-on-surface-variant hover:bg-primary-container/10 hover:text-primary transition-all group"
+                                href="#">
+                                <span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                                <span class="font-body">Settings</span>
+                            </a>
+                        </div>
+                        <div class="p-4 border-t border-surface-container-high">
+                            <button onclick="handleLogout()"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-error-container text-error rounded-lg font-manrope font-bold text-sm hover:bg-error hover:text-on-error transition-all duration-200">
+                                <span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <main class="flex-grow">
+        <!-- hero -->
+        <section class="relative h-[600px] w-full flex items-center z-30">
+            <div class="absolute inset-0 overflow-hidden z-0">
+                <img alt="Professional commercial aircraft" class="absolute inset-0 w-full h-full object-cover"
+                    data-alt="A clean, professional wide shot of a commercial airliner flying above a layer of soft white clouds during high noon with clear blue skies"
+                    src="images/index_bg.jpeg" />
+                <div class="absolute inset-0 bg-gradient-to-r from-on-background/60 to-transparent"></div>
+            </div>
+            <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
+                <div class="max-w-2xl mb-12">
+                    <h1 class="text-display-lg text-white font-extrabold tracking-tight mb-4 leading-tight uppercase">
+                        Command Your Journey
+                    </h1>
+                </div>
+                <div class="bg-surface-container-lowest/90 backdrop-blur-xl p-8 rounded-xl shadow-2xl max-w-5xl">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                        <!-- from -->
+                        <div class="relative" id="departure-wrapper">
+                            <label
+                                class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">From</label>
+                            <div
+                                class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg focus-within:ring-2 focus-within:ring-surface-tint/50 transition-all">
+                                <span class="material-symbols-outlined text-outline mr-2"
+                                    data-icon="flight_takeoff">flight_takeoff</span>
+                                <input id="departure-input"
+                                    class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0 font-medium"
+                                    placeholder="Departure City" type="text" autocomplete="off" />
+                            </div>
+                            <div id="departure-dropdown"
+                                class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-outline-variant/20 z-30 max-h-56 overflow-y-auto">
+                            </div>
+                        </div>
+                        <!-- to -->
+                        <div class="relative" id="arrival-wrapper">
+                            <label
+                                class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">To</label>
+                            <div
+                                class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg focus-within:ring-2 focus-within:ring-surface-tint/50 transition-all">
+                                <span class="material-symbols-outlined text-outline mr-2"
+                                    data-icon="flight_land">flight_land</span>
+                                <input id="arrival-input"
+                                    class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0 font-medium"
+                                    placeholder="Arrival City" type="text" autocomplete="off" />
+                            </div>
+                            <div id="arrival-dropdown"
+                                class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-outline-variant/20 z-30 max-h-56 overflow-y-auto">
+                            </div>
+                        </div>
+                        <!-- when -->
+                        <div class="relative" id="date-wrapper">
+                            <label
+                                class="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Departure
+                                Date</label>
+                            <div class="flex items-center bg-surface-container-highest px-4 py-3 rounded-lg gap-1 cursor-text"
+                                id="date-field-row">
+                                <button type="button" id="cal-toggle-btn"
+                                    class="material-symbols-outlined text-outline mr-1 bg-transparent border-none cursor-pointer hover:text-primary transition-colors p-0"
+                                    data-icon="calendar_today">calendar_today</button>
+                                <input id="date-dd" type="text" inputmode="numeric"
+                                    class="bg-transparent border-none focus:ring-0 font-medium text-body-md p-0 w-7 text-center outline-none"
+                                    placeholder="DD" maxlength="2" />
+                                <span class="text-outline font-bold select-none">-</span>
+                                <input id="date-mm" type="text" inputmode="numeric"
+                                    class="bg-transparent border-none focus:ring-0 font-medium text-body-md p-0 w-7 text-center outline-none"
+                                    placeholder="MM" maxlength="2" />
+                                <span class="text-outline font-bold select-none">-</span>
+                                <input id="date-yyyy" type="text" inputmode="numeric"
+                                    class="bg-transparent border-none focus:ring-0 font-medium text-body-md p-0 w-12 text-center outline-none"
+                                    placeholder="YYYY" maxlength="4" />
+                            </div>
+                            <p id="date-error" class="text-xs text-red-500 mt-1 hidden"></p>
+                            <div id="cal-popup"
+                                class="hidden absolute top-full left-0 mt-2 bg-white rounded-xl shadow-2xl border border-outline-variant/20 z-40 p-4 w-72">
+                                <div class="flex items-center justify-between mb-3">
+                                    <button type="button" id="cal-prev"
+                                        class="material-symbols-outlined text-outline hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-low">chevron_left</button>
+                                    <span id="cal-month-label" class="font-bold text-sm text-on-surface"></span>
+                                    <button type="button" id="cal-next"
+                                        class="material-symbols-outlined text-outline hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container-low">chevron_right</button>
+                                </div>
+                                <div class="grid grid-cols-7 gap-0.5 mb-1">
+                                    <div class="text-center text-xs font-bold text-outline py-1">Su</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">Mo</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">Tu</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">We</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">Th</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">Fr</div>
+                                    <div class="text-center text-xs font-bold text-outline py-1">Sa</div>
+                                </div>
+                                <div id="cal-days" class="grid grid-cols-7 gap-0.5"></div>
+                            </div>
+                        </div>
+                        <!-- run -->
+                        <div>
+                            <button
+                                class="w-full bg-primary text-white h-[48px] rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-95 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                                onclick="handleSearch()">
+                                <span class="material-symbols-outlined text-lg" data-icon="search">search</span>
+                                Search Flights
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+        <!-- items -->
+        <section class="max-w-7xl mx-auto px-8 mt-3 relative z-20">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- item 1 -->
+                <div class="bg-surface-container-lowest p-6 rounded-xl shadow-md flex items-center gap-6 border border-white hover:shadow-lg transition-all cursor-pointer"
+                    onclick="void(0)">
+                    <div class="bg-primary-fixed w-14 h-14 rounded-full flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-3xl"
+                            data-icon="travel_explore">travel_explore</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-headline-sm text-on-surface">Search Flights</h3>
+                        <p class="text-body-sm text-on-surface-variant">Access global routes and schedules.</p>
+                    </div>
+                </div>
+                <!-- item 2 -->
+                <div class="bg-surface-container-lowest p-6 rounded-xl shadow-md flex items-center gap-6 border border-white hover:shadow-lg transition-all cursor-pointer"
+                    onclick="window.location.href='tickets.html'">
+                    <div
+                        class="bg-secondary-fixed w-14 h-14 rounded-full flex items-center justify-center text-secondary">
+                        <span class="material-symbols-outlined text-3xl" data-icon="receipt_long">receipt_long</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-headline-sm text-on-surface">View Bookings</h3>
+                        <p class="text-body-sm text-on-surface-variant">Review and manage upcoming trips.</p>
+                    </div>
+                </div>
+                <!-- item 3 -->
+                <div class="bg-surface-container-lowest p-6 rounded-xl shadow-md flex items-center gap-6 border border-white hover:shadow-lg transition-all cursor-pointer"
+                    onclick="window.location.href='user_dashboard.html'">
+                    <div
+                        class="bg-tertiary-fixed w-14 h-14 rounded-full flex items-center justify-center text-tertiary">
+                        <span class="material-symbols-outlined text-3xl"
+                            data-icon="person_outline">person_outline</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-headline-sm text-on-surface">User Profile</h3>
+                        <p class="text-body-sm text-on-surface-variant">Manage credentials and loyalty status.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="py-12"></div>
+    </main>
+    <!-- bottom -->
+    <footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+            <div class="mb-6 md:mb-0">
+                <div class="text-lg font-bold text-slate-900 dark:text-slate-100 cursor-pointer" onclick="void(0)">
+                    AIRPRO</div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-inter mt-1 tracking-wide">
+                    © 2026 AIRPRO Airline Management. All rights reserved.
+                </p>
+            </div>
+            <div class="flex space-x-8 font-inter text-xs tracking-wide">
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/privacy_policy.html'">Privacy Policy</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/T&C.html'">Terms of Service</button>
+                <button
+                    class="text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    onclick="window.location.href='footers/support.html'">Support</button>
+            </div>
+        </div>
+    </footer>
+    <!-- Modal Overlay -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-on-background/40 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300"
+        id="modalOverlay">
+        <!-- Login/Signup Modal -->
+        <div class="relative w-full max-w-md bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden scale-90 transition-transform duration-300"
+            id="authModal">
+            <!-- Close Button -->
+            <button
+                class="absolute top-4 right-4 z-10 p-2 text-outline hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"
+                onclick="closeModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <!-- Tabs -->
+            <div class="flex border-b border-outline-variant/30">
+                <button
+                    class="flex-1 py-5 text-sm font-bold tracking-widest uppercase border-b-2 border-primary text-primary transition-all"
+                    id="tab-login" onclick="switchTab('login')">
+                    Login
+                </button>
+                <button
+                    class="flex-1 py-5 text-sm font-bold tracking-widest uppercase border-b-2 border-transparent text-outline hover:text-on-surface-variant transition-all"
+                    id="tab-signup" onclick="switchTab('signup')">
+                    Sign Up
+                </button>
+            </div>
+            <!-- Modal Content -->
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <h2 class="font-headline text-2xl font-extrabold text-on-surface" id="modalTitle">Welcome Back</h2>
+                    <p class="text-on-surface-variant text-sm mt-2" id="modalSubtitle">Access your navigator dashboard.
+                    </p>
+                </div>
+
+                <!-- Role Toggle (Login mode only) -->
+                <div id="roleSelector" class="role-toggle-container">
+                    <div id="role-customer" class="role-option active" onclick="setRole('customer')">Customer</div>
+                    <div id="role-admin" class="role-option" onclick="setRole('admin')">Administrator</div>
+                </div>
+
+                <!-- Login Form -->
+                <form class="space-y-5" id="loginForm" onsubmit="handleAuth(event, 'login')">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Email
+                            Address</label>
+                        <input id="loginEmail"
+                            class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                            placeholder="Enter Email Address" required="" type="email" />
+                    </div>
+                    <div class="space-y-1">
+                        <label
+                            class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Password</label>
+                        <input id="loginPass"
+                            class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                            placeholder="Enter Password" required="" type="password" />
+                    </div>
+                    <div class="flex items-center justify-between py-2">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input class="rounded border-outline-variant text-primary focus:ring-primary/20 w-4 h-4"
+                                type="checkbox" />
+                            <span
+                                class="text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Remember
+                                Me</span>
+                        </label>
+                        <a class="text-sm font-semibold text-primary hover:underline" href="#">Forgot Password?</a>
+                    </div>
+                    <button id="loginSubmitBtn"
+                        class="w-full py-4 bg-primary text-white font-headline font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-container active:scale-[0.98] transition-all"
+                        type="submit">
+                        Secure Customer Login
+                    </button>
+                </form>
+                <!-- Signup Form (Hidden by default) -->
+                <form class="hidden space-y-5" id="signupForm" onsubmit="handleAuth(event, 'signup')">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Full
+                            Name</label>
+                        <input id="signupName"
+                            class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                            placeholder="Enter Full Name" required="" type="text" />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Email
+                            Address</label>
+                        <input id="signupEmail"
+                            class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                            placeholder="Enter Email Address" required="" type="email" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label
+                                class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Password</label>
+                            <input
+                                class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                                id="signupPass" placeholder="Enter Password" required="" type="password" />
+                        </div>
+                        <div class="space-y-1">
+                            <label
+                                class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Confirm</label>
+                            <input
+                                class="w-full bg-surface-container-low border-none rounded-lg px-4 py-3 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
+                                id="signupConfirm" placeholder="Confirm Password" required="" type="password" />
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-outline text-center leading-relaxed">
+                        By signing up, you agree to AIRPRO's <a class="underline" href="footers/T&C.html">Terms of
+                            Service</a> and <a class="underline" href="footers/privacy_policy.html">Privacy Policy</a>.
+                    </p>
+                    <button
+                        class="w-full py-4 bg-primary text-white font-headline font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-container active:scale-[0.98] transition-all"
+                        type="submit">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Toast Notification -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-on-background text-surface rounded-lg px-6 py-4 flex items-center gap-3 shadow-2xl translate-y-20 opacity-0 transition-all duration-300"
+        id="toast">
+        <span class="material-symbols-outlined text-tertiary-fixed" data-icon="check_circle">check_circle</span>
+        <span class="font-semibold" id="toastMessage">Login successful. Welcome back!</span>
+    </div>
+    <script>
+        // Simulate local state
+        let isLoggedIn = false;
+        let authRole = 'customer'; // Default
+        let currentUser = null;
+
+        // Dummy Data
+        const DUMMY_USERS = {
+            'customer@airpro.com': {
+                password: 'password123',
+                name: 'Kiyatoka Ayanokoji',
+                role: 'customer',
+                email: 'customer@airpro.com'
+            },
+            'admin@airpro.com': {
+                password: 'password123',
+                name: 'Alex',
+                role: 'admin',
+                email: 'admin@airpro.com'
+            }
+        };
+
+        window.addEventListener('load', () => {
+            // Check session storage for persistence if needed
+            const session = localStorage.getItem('airpro_session');
+            if (session) {
+                currentUser = JSON.parse(session);
+                isLoggedIn = true;
+                updateNavbar();
+            } else {
+                // Auto-open modal for demonstration if guest
+                setTimeout(() => {
+                    openModal();
+                }, 800);
+            }
+        });
+
+        function setRole(role) {
+            authRole = role;
+            const custBtn = document.getElementById('role-customer');
+            const adminBtn = document.getElementById('role-admin');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const emailInp = document.getElementById('loginEmail');
+
+            if (role === 'customer') {
+                custBtn.classList.add('active');
+                adminBtn.classList.remove('active');
+                submitBtn.innerText = "Secure Customer Login";
+                emailInp.placeholder = "Enter Email Address";
+            } else {
+                adminBtn.classList.add('active');
+                custBtn.classList.remove('active');
+                submitBtn.innerText = "Secure Admin Access";
+                emailInp.placeholder = "Enter Email Address";
+            }
+        }
+
+        function openModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const modal = document.getElementById('authModal');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.remove('scale-90');
+            modal.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const modal = document.getElementById('authModal');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.add('scale-90');
+            modal.classList.remove('scale-100');
+        }
+
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const roleSelector = document.getElementById('roleSelector');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                roleSelector.classList.remove('hidden');
+                tabLogin.classList.add('border-primary', 'text-primary');
+                tabLogin.classList.remove('border-transparent', 'text-outline');
+                tabSignup.classList.add('border-transparent', 'text-outline');
+                tabSignup.classList.remove('border-primary', 'text-primary');
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Access your navigator dashboard.";
+            } else {
+                loginForm.classList.add('hidden');
+                roleSelector.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabSignup.classList.add('border-primary', 'text-primary');
+                tabSignup.classList.remove('border-transparent', 'text-outline');
+                tabLogin.classList.add('border-transparent', 'text-outline');
+                tabLogin.classList.remove('border-primary', 'text-primary');
+                title.innerText = "Join AIRPRO";
+                subtitle.innerText = "Start your journey with precision and luxury.";
+            }
+        }
+
+        async function handleAuth(event, type) {
+            event.preventDefault();
+
+            if (type === 'signup') {
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const pass = document.getElementById('signupPass').value;
+                const confirm = document.getElementById('signupConfirm').value;
+
+                if (pass !== confirm) {
+                    showToast("Passwords do not match!", true);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: email,
+                            password: pass,
+                            role: 'ROLE_USER',
+                            name: name
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.status === 200) {
+                        showToast("Account created successfully!");
+                        setTimeout(() => {
+                            switchTab('login');
+                        }, 1500);
+                    } else {
+                        showToast(data.message || "Registration failed.", true);
+                    }
+                } catch (error) {
+                    showToast("Network error. Please try again.", true);
+                }
+            } else {
+                const email = document.getElementById('loginEmail').value;
+                const pass = document.getElementById('loginPass').value;
+
+                try {
+                    const response = await fetch('/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, password: pass })
+                    });
+                    
+                    const data = await response.json();
+
+                    if (response.ok && data.status === 200) {
+                        const token = data.data;
+                        
+                        // Decode JWT payload (simple base64 decoding)
+                        const payloadBase64 = token.split('.')[1];
+                        const payloadStr = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+                        const payload = JSON.parse(payloadStr);
+                        
+                        const role = payload.role; // e.g. "ADMIN" or "USER"
+                        
+                        // Check if the role matches the tab selected (admin vs customer)
+                        if ((authRole === 'admin' && role !== 'ADMIN') || 
+                            (authRole === 'customer' && role !== 'USER')) {
+                            showToast("Invalid role selection for this account.", true);
+                            return;
+                        }
+
+                        // Save session
+                        localStorage.setItem('jwt_token', token);
+                        
+                        const sessionUser = {
+                            name: payload.sub,
+                            email: payload.sub,
+                            role: authRole
+                        };
+                        localStorage.setItem('airpro_session', JSON.stringify(sessionUser));
+                        
+                        isLoggedIn = true;
+                        currentUser = sessionUser;
+
+                        if (authRole === 'admin') {
+                            showToast("Redirecting to Admin Panel...");
+                            setTimeout(() => {
+                                window.location.href = 'admin_dashboard.html';
+                            }, 1500);
+                        } else {
+                            showToast("Welcome back!");
+                            setTimeout(() => {
+                                closeModal();
+                                updateNavbar();
+                            }, 1500);
+                        }
+                    } else {
+                        showToast(data.message || "Invalid credentials!", true);
+                    }
+                } catch (error) {
+                    showToast("Login failed. Please try again.", true);
+                }
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            msgEl.innerText = message;
+
+            if (isError) {
+                toast.classList.add('bg-error');
+                toast.classList.remove('bg-on-background');
+            } else {
+                toast.classList.remove('bg-error');
+                toast.classList.add('bg-on-background');
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function handleProfileClick() {
+            if (!isLoggedIn) {
+                openModal();
+            } else {
+                const popup = document.getElementById('profile-popup');
+                popup.classList.toggle('active');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('profile-popup');
+            const trigger = document.getElementById('profile-trigger');
+            if (popup && popup.classList.contains('active') && !popup.contains(e.target) && !trigger.contains(e
+                    .target)) {
+                popup.classList.remove('active');
+            }
+        });
+
+        function updateNavbar() {
+            const triggerLabel = document.getElementById('trigger-label');
+            const popupName = document.getElementById('popup-name');
+            const popupEmail = document.getElementById('popup-email');
+
+            if (isLoggedIn && currentUser) {
+                triggerLabel.innerText = currentUser.name;
+                triggerLabel.classList.remove('hidden');
+
+                popupName.innerText = currentUser.name;
+                popupEmail.innerText = currentUser.email;
+            } else {
+                triggerLabel.innerText = "Login / Sign Up";
+                triggerLabel.classList.add('hidden');
+
+                popupName.innerText = "Guest User";
+                popupEmail.innerText = "customer@airpro.com";
+            }
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            currentUser = null;
+            localStorage.removeItem('airpro_session');
+            document.getElementById('profile-popup').classList.remove('active');
+            updateNavbar();
+            showToast("Successfully logged out.");
+        }
+
+        // cities
+        const indianCities = [{
+                code: 'DEL',
+                city: 'Delhi'
+            },
+            {
+                code: 'BOM',
+                city: 'Mumbai'
+            },
+            {
+                code: 'BLR',
+                city: 'Bengaluru'
+            },
+            {
+                code: 'MAA',
+                city: 'Chennai'
+            },
+            {
+                code: 'CCU',
+                city: 'Kolkata'
+            },
+            {
+                code: 'HYD',
+                city: 'Hyderabad'
+            },
+            {
+                code: 'COK',
+                city: 'Kochi'
+            },
+            {
+                code: 'AMD',
+                city: 'Ahmedabad'
+            },
+            {
+                code: 'PNQ',
+                city: 'Pune'
+            },
+            {
+                code: 'GOI',
+                city: 'Goa'
+            },
+            {
+                code: 'JAI',
+                city: 'Jaipur'
+            },
+            {
+                code: 'LKO',
+                city: 'Lucknow'
+            },
+            {
+                code: 'IXC',
+                city: 'Chandigarh'
+            },
+            {
+                code: 'PAT',
+                city: 'Patna'
+            },
+            {
+                code: 'GAU',
+                city: 'Guwahati'
+            },
+            {
+                code: 'BHO',
+                city: 'Bhopal'
+            },
+            {
+                code: 'NAG',
+                city: 'Nagpur'
+            },
+            {
+                code: 'VNS',
+                city: 'Varanasi'
+            },
+            {
+                code: 'IXB',
+                city: 'Bagdogra'
+            },
+            {
+                code: 'SXR',
+                city: 'Srinagar'
+            },
+            {
+                code: 'TRV',
+                city: 'Thiruvananthapuram'
+            },
+            {
+                code: 'CJB',
+                city: 'Coimbatore'
+            },
+            {
+                code: 'IXM',
+                city: 'Madurai'
+            },
+            {
+                code: 'RPR',
+                city: 'Raipur'
+            },
+            {
+                code: 'BBI',
+                city: 'Bhubaneswar'
+            },
+            {
+                code: 'VGA',
+                city: 'Vijayawada'
+            },
+            {
+                code: 'VTZ',
+                city: 'Visakhapatnam'
+            },
+            {
+                code: 'IXJ',
+                city: 'Jammu'
+            },
+            {
+                code: 'IDR',
+                city: 'Indore'
+            },
+            {
+                code: 'ATQ',
+                city: 'Amritsar'
+            },
+            {
+                code: 'UDR',
+                city: 'Udaipur'
+            },
+        ];
+
+        const depInput = document.getElementById('departure-input');
+        const depDropdown = document.getElementById('departure-dropdown');
+
+        function renderDepartureOptions(query) {
+            const q = query.trim().toLowerCase();
+            const filtered = q === '' ?
+                indianCities :
+                indianCities.filter(c =>
+                    c.code.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)
+                );
+
+            depDropdown.innerHTML = '';
+
+            if (filtered.length === 0) {
+                depDropdown.innerHTML = '<div class="p-3 text-sm text-outline">No cities found</div>';
+            } else {
+                filtered.forEach((c, i) => {
+                    const item = document.createElement('div');
+                    item.className =
+                        'flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors' +
+                        (i < filtered.length - 1 ? ' border-b border-outline-variant/10' : '');
+                    item.innerHTML = `
+                        <span class="inline-block bg-primary/10 text-primary font-extrabold text-xs px-2 py-1 rounded min-w-[44px] text-center tracking-wider">${c.code}</span>
+                        <span class="text-sm font-medium text-on-surface">${c.code} - ${c.city}</span>`;
+                    item.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        depInput.value = `${c.code} - ${c.city}`;
+                        depDropdown.classList.add('hidden');
+                    });
+                    depDropdown.appendChild(item);
+                });
+            }
+        }
+
+        depInput.addEventListener('focus', () => {
+            renderDepartureOptions(depInput.value);
+            depDropdown.classList.remove('hidden');
+        });
+
+        depInput.addEventListener('input', () => {
+            renderDepartureOptions(depInput.value);
+            depDropdown.classList.remove('hidden');
+        });
+
+        depInput.addEventListener('blur', () => {
+            depDropdown.classList.add('hidden');
+        });
+
+        // arr helper
+        const arrInput = document.getElementById('arrival-input');
+        const arrDropdown = document.getElementById('arrival-dropdown');
+
+        function renderArrivalOptions(query) {
+            const q = query.trim().toLowerCase();
+            const filtered = q === '' ?
+                indianCities :
+                indianCities.filter(c =>
+                    c.code.toLowerCase().includes(q) || c.city.toLowerCase().includes(q)
+                );
+
+            arrDropdown.innerHTML = '';
+
+            if (filtered.length === 0) {
+                arrDropdown.innerHTML = '<div class="p-3 text-sm text-outline">No cities found</div>';
+            } else {
+                filtered.forEach((c, i) => {
+                    const item = document.createElement('div');
+                    item.className =
+                        'flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low cursor-pointer transition-colors' +
+                        (i < filtered.length - 1 ? ' border-b border-outline-variant/10' : '');
+                    item.innerHTML = `
+                        <span class="inline-block bg-primary/10 text-primary font-extrabold text-xs px-2 py-1 rounded min-w-[44px] text-center tracking-wider">${c.code}</span>
+                        <span class="text-sm font-medium text-on-surface">${c.code} - ${c.city}</span>`;
+                    item.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        arrInput.value = `${c.code} - ${c.city}`;
+                        arrDropdown.classList.add('hidden');
+                    });
+                    arrDropdown.appendChild(item);
+                });
+            }
+        }
+
+        arrInput.addEventListener('focus', () => {
+            renderArrivalOptions(arrInput.value);
+            arrDropdown.classList.remove('hidden');
+        });
+
+        arrInput.addEventListener('input', () => {
+            renderArrivalOptions(arrInput.value);
+            arrDropdown.classList.remove('hidden');
+        });
+
+        arrInput.addEventListener('blur', () => {
+            arrDropdown.classList.add('hidden');
+        });
+
+        // date picker stuff
+        const ddInput = document.getElementById('date-dd');
+        const mmInput = document.getElementById('date-mm');
+        const yyyyInput = document.getElementById('date-yyyy');
+        const calPopup = document.getElementById('cal-popup');
+        const calToggle = document.getElementById('cal-toggle-btn');
+        const calPrev = document.getElementById('cal-prev');
+        const calNext = document.getElementById('cal-next');
+        const calLabel = document.getElementById('cal-month-label');
+        const calDays = document.getElementById('cal-days');
+        const dateError = document.getElementById('date-error');
+
+        const todayObj = new Date();
+        todayObj.setHours(0, 0, 0, 0);
+        let calYear = todayObj.getFullYear();
+        let calMonth = todayObj.getMonth(); // 0-indexed
+
+        const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        function daysInMonth(y, m) {
+            return new Date(y, m + 1, 0).getDate();
+        }
+
+        function renderCalendar() {
+            calLabel.textContent = MONTHS[calMonth] + ' ' + calYear;
+            calDays.innerHTML = '';
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const total = daysInMonth(calYear, calMonth);
+
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                calDays.insertAdjacentHTML('beforeend', '<div></div>');
+            }
+
+            for (let d = 1; d <= total; d++) {
+                const cellDate = new Date(calYear, calMonth, d);
+                const isPast = cellDate < todayObj;
+                const isToday = cellDate.getTime() === todayObj.getTime();
+                const selDD = parseInt(ddInput.value);
+                const selMM = parseInt(mmInput.value);
+                const selYYYY = parseInt(yyyyInput.value);
+                const isSelected = selDD === d && selMM === calMonth + 1 && selYYYY === calYear;
+
+                let cls =
+                    'text-center text-sm rounded-full w-8 h-8 flex items-center justify-center mx-auto transition-all ';
+                if (isPast) {
+                    cls += 'text-slate-300 cursor-not-allowed';
+                } else if (isSelected) {
+                    cls += 'bg-primary text-white font-bold cursor-pointer';
+                } else if (isToday) {
+                    cls += 'border border-primary text-primary font-bold cursor-pointer hover:bg-primary/10';
+                } else {
+                    cls += 'text-on-surface hover:bg-surface-container-low cursor-pointer';
+                }
+
+                const cell = document.createElement('div');
+                cell.className = cls;
+                cell.textContent = d;
+                if (!isPast) {
+                    cell.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        ddInput.value = String(d).padStart(2, '0');
+                        mmInput.value = String(calMonth + 1).padStart(2, '0');
+                        yyyyInput.value = calYear;
+                        dateError.classList.add('hidden');
+                        calPopup.classList.add('hidden');
+                        renderCalendar();
+                    });
+                }
+                calDays.appendChild(cell);
+            }
+        }
+
+        function openCalendar() {
+            // Sync view to currently entered date if valid
+            const dd = parseInt(ddInput.value);
+            const mm = parseInt(mmInput.value);
+            const yy = parseInt(yyyyInput.value);
+            if (mm >= 1 && mm <= 12 && yy >= todayObj.getFullYear()) {
+                calMonth = mm - 1;
+                calYear = yy;
+            } else {
+                calMonth = todayObj.getMonth();
+                calYear = todayObj.getFullYear();
+            }
+            renderCalendar();
+            calPopup.classList.remove('hidden');
+        }
+
+        calToggle.addEventListener('click', () => {
+            calPopup.classList.contains('hidden') ? openCalendar() : calPopup.classList.add('hidden');
+        });
+
+        calPrev.addEventListener('click', () => {
+            // Don't go before current month
+            if (calYear === todayObj.getFullYear() && calMonth === todayObj.getMonth()) return;
+            calMonth--;
+            if (calMonth < 0) {
+                calMonth = 11;
+                calYear--;
+            }
+            renderCalendar();
+        });
+
+        calNext.addEventListener('click', () => {
+            calMonth++;
+            if (calMonth > 11) {
+                calMonth = 0;
+                calYear++;
+            }
+            renderCalendar();
+        });
+
+        // Close calendar when clicking outside
+        document.addEventListener('mousedown', (e) => {
+            if (!document.getElementById('date-wrapper').contains(e.target)) {
+                calPopup.classList.add('hidden');
+            }
+        });
+
+        // logic stuff
+        function showError(msg) {
+            dateError.textContent = msg;
+            dateError.classList.remove('hidden');
+        }
+
+        function clearError() {
+            dateError.classList.add('hidden');
+        }
+
+        function validateDate() {
+            const dd = parseInt(ddInput.value);
+            const mm = parseInt(mmInput.value);
+            const yyyy = parseInt(yyyyInput.value);
+            if (!ddInput.value || !mmInput.value || !yyyyInput.value) return;
+
+            if (mm < 1 || mm > 12) {
+                showError('Month must be between 01 and 12.');
+                return;
+            }
+            const maxDay = daysInMonth(yyyy, mm - 1);
+            if (dd < 1 || dd > maxDay) {
+                showError(`Day must be between 01 and ${maxDay} for this month.`);
+                return;
+            }
+            if (yyyy < todayObj.getFullYear()) {
+                showError('Year cannot be in the past.');
+                return;
+            }
+
+            const entered = new Date(yyyy, mm - 1, dd);
+            entered.setHours(0, 0, 0, 0);
+            if (entered < todayObj) {
+                showError('Date cannot be in the past.');
+                return;
+            }
+
+            clearError();
+            // Sync calendar view
+            calMonth = mm - 1;
+            calYear = yyyy;
+        }
+
+        // numbers only
+        function digitsOnly(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(e.key)) {
+                e.preventDefault();
+            }
+        }
+        [ddInput, mmInput, yyyyInput].forEach(inp => inp.addEventListener('keydown', digitsOnly));
+
+        // next field
+        ddInput.addEventListener('input', () => {
+            if (ddInput.value.length === 2) mmInput.focus();
+            validateDate();
+        });
+        mmInput.addEventListener('input', () => {
+            if (mmInput.value.length === 2) yyyyInput.focus();
+            validateDate();
+        });
+        yyyyInput.addEventListener('input', () => {
+            if (yyyyInput.value.length === 4) validateDate();
+        });
+        [ddInput, mmInput, yyyyInput].forEach(inp => inp.addEventListener('blur', validateDate));
+
+        // Search Redirect
+        function handleSearch() {
+            const dep = document.getElementById('departure-input').value;
+            const arr = document.getElementById('arrival-input').value;
+            const dd = document.getElementById('date-dd').value;
+            const mm = document.getElementById('date-mm').value;
+            const yyyy = document.getElementById('date-yyyy').value;
+
+            if (!dep || !arr || !dd || !mm || !yyyy) {
+                alert("Please fill in all search details.");
+                return;
+            }
+
+            // Extract codes from "CODE - City"
+            const fromCode = dep.split(' - ')[0];
+            const toCode = arr.split(' - ')[0];
+
+            // Format date to "DD Mon YYYY" (e.g., "29 Mar 2026")
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const monthName = monthNames[parseInt(mm) - 1];
+            const formattedDate = `${dd.padStart(2, '0')} ${monthName} ${yyyy}`;
+
+            // Build URL
+            const params = new URLSearchParams({
+                from: fromCode,
+                to: toCode,
+                date: formattedDate
+            });
+
+            window.location.href = `flight_details.html?${params.toString()}`;
+        }
+    </script>
+</body>
+
+</html>

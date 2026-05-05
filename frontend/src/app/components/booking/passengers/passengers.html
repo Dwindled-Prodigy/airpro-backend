@@ -1,0 +1,136 @@
+<div class="bg-background min-h-screen py-10" *ngIf="flight">
+    <main class="max-w-7xl mx-auto p-4 lg:py-8 grid grid-cols-12 gap-6 w-full">
+        
+        <!-- Header -->
+        <div class="col-span-12 mb-4">
+            <h1 class="text-3xl font-extrabold text-slate-900 font-headline uppercase tracking-tight">Passenger Details</h1>
+            <p class="text-slate-500 font-medium mt-1">Please enter details exactly as they appear on your government-issued ID.</p>
+        </div>
+
+        <!-- Forms -->
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <div class="space-y-6">
+                <!-- Loop through passengers -->
+                <section *ngFor="let p of passengers; let i = index" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 px-6 py-3 border-b flex justify-between items-center">
+                        <h2 class="font-bold text-slate-700 text-xs uppercase">Passenger {{ i + 1 }} - Seat {{ p.seat }}</h2>
+                        <span *ngIf="p.isPrimary" class="text-[9px] bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold uppercase tracking-wider">Primary Adult</span>
+                        <span *ngIf="!p.isPrimary" class="text-[9px] bg-slate-200 text-slate-600 px-2 py-1 rounded font-bold uppercase tracking-wider">Co-Passenger</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-12 gap-4">
+                        <div class="col-span-12 md:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Title*</label>
+                            <select class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="p.title">
+                                <option>Mr.</option>
+                                <option>Mrs.</option>
+                                <option>Ms.</option>
+                            </select>
+                        </div>
+                        <div class="col-span-12 md:col-span-5">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">First Name*</label>
+                            <input type="text" placeholder="First Name" required 
+                                [ngClass]="{'border-red-500 bg-red-50': showErrors && !p.firstName}"
+                                class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none uppercase" [(ngModel)]="p.firstName">
+                        </div>
+                        <div class="col-span-12 md:col-span-5">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Last Name*</label>
+                            <input type="text" placeholder="Last Name" required 
+                                [ngClass]="{'border-red-500 bg-red-50': showErrors && !p.lastName}"
+                                class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none uppercase" [(ngModel)]="p.lastName">
+                        </div>
+                        <div class="col-span-12 md:col-span-4">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Gender*</label>
+                            <select required 
+                                [ngClass]="{'border-red-500 bg-red-50': showErrors && !p.gender}"
+                                class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="p.gender">
+                                <option value="">Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                        <div class="col-span-12 md:col-span-4">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">DOB*</label>
+                            <input type="date" required 
+                                [ngClass]="{'border-red-500 bg-red-50': showErrors && !p.dob}"
+                                class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="p.dob" (change)="calculateAge(i)">
+                        </div>
+                        <div class="col-span-12 md:col-span-4">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Age</label>
+                            <input type="text" readonly placeholder="Auto-fill" class="w-full border border-slate-300 rounded-md p-2 text-sm bg-slate-50 text-slate-500 outline-none" [(ngModel)]="p.age">
+                        </div>
+                        <div class="col-span-12 md:col-span-6">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">ID Type*</label>
+                            <select class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="p.idType">
+                                <option>Aadhaar Card</option>
+                                <option>Passport</option>
+                            </select>
+                        </div>
+                        <div class="col-span-12 md:col-span-6">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">ID Number*</label>
+                            <input type="text" placeholder="Enter ID Details" required 
+                                [ngClass]="{'border-red-500 bg-red-50': showErrors && !p.idNumber}"
+                                class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none uppercase" [(ngModel)]="p.idNumber">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Contact -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 px-6 py-3 border-b">
+                    <h2 class="font-bold text-slate-700 text-xs uppercase">Contact Information</h2>
+                </div>
+                <div class="p-6 grid grid-cols-12 gap-4">
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Mobile Number*</label>
+                        <div class="flex">
+                            <span class="bg-slate-100 border border-slate-300 border-r-0 px-3 py-2 text-sm rounded-l-md font-medium text-slate-600">+91</span>
+                            <input type="text" maxlength="10" placeholder="xxxxxxxxxx" 
+                                [ngClass]="{'border-red-500 focus:ring-red-500': showErrors && !isValidMobile()}"
+                                class="w-full border border-slate-300 rounded-r-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="contactMobile">
+                        </div>
+                        <p *ngIf="showErrors && !isValidMobile()" class="text-[10px] text-red-500 font-bold mt-1">Please enter a valid 10-digit mobile number.</p>
+                    </div>
+                    <div class="col-span-12 md:col-span-6">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Email Address*</label>
+                        <input type="email" placeholder="name@example.com" 
+                            [ngClass]="{'border-red-500 focus:ring-red-500': showErrors && !isValidEmail()}"
+                            class="w-full border border-slate-300 rounded-md p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" [(ngModel)]="contactEmail">
+                        <p *ngIf="showErrors && !isValidEmail()" class="text-[10px] text-red-500 font-bold mt-1">Please enter a valid email address.</p>
+                    </div>
+                    <div class="col-span-12">
+                        <p class="text-[11px] text-slate-500 font-medium">Your tickets and flight updates will be sent to these contact details.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="col-span-12 lg:col-span-4">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 p-6 sticky top-24">
+                <h3 class="font-black text-blue-700 text-xs uppercase mb-4 border-b pb-2">Fare Summary</h3>
+                <div class="space-y-3 text-sm pb-4">
+                    <div class="flex justify-between text-slate-500 font-medium">
+                        <span>Base Fare (x {{ bookingState.passengerCount }})</span>
+                        <span>₹{{ (bookingState.baseFare * bookingState.passengerCount) | number }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 font-medium">
+                        <span>Taxes & Fees</span>
+                        <span>₹{{ (bookingState.tax * bookingState.passengerCount) | number }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 font-medium" *ngIf="bookingState.seatFee > 0">
+                        <span>Seat Selection</span>
+                        <span>₹{{ bookingState.seatFee | number }}</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center border-t pt-4">
+                    <span class="font-black text-xs uppercase text-slate-700">Grand Total</span>
+                    <span class="text-2xl font-black text-blue-700">₹{{ totalFare | number }}</span>
+                </div>
+                <button (click)="proceedToPayment()" class="bg-blue-700 text-white w-full py-4 mt-6 rounded-xl font-bold text-sm hover:opacity-90 transition-all shadow-md active:scale-95 cursor-pointer">
+                    Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </main>
+</div>

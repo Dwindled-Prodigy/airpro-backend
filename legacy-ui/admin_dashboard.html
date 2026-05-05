@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AIRPRO — Flight Operations Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0C447C; --navy-dark: #042C53; --navy-light: #185FA5;
+    --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-800: #0C447C;
+    --teal-50: #E1F5EE; --teal-600: #0F6E56; --teal-800: #085041;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-600: #BA7517; --amber-800: #633806;
+    --red-50: #FCEBEB; --red-100: #F7C1C1; --red-600: #A32D2D;
+    --green-50: #EAF3DE; --green-600: #3B6D11; --green-200: #C0DD97;
+    --coral-50: #FAECE7; --coral-600: #993C1D;
+    --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-600: #534AB7; --purple-800: #3C3489;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-200: #B4B2A9; --gray-500: #5F5E5A; --gray-800: #2C2C2A;
+    --silver-bg: #D3D1C7; --silver-text: #2C2C2A;
+    --bg: #F4F3EF; --bg-card: #FFFFFF; --bg-secondary: #F1EFE8;
+    --text: #1A1A18; --text-muted: #5F5E5A; --text-hint: #888780;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --font: 'DM Sans', sans-serif; --font-mono: 'DM Mono', monospace;
+    --radius: 10px; --radius-lg: 14px; --radius-xl: 18px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 230px; min-width: 230px; background: var(--navy-dark); display: flex; flex-direction: column; height: 100vh; }
+  .sidebar-logo { padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-title { font-size: 16px; font-weight: 600; color: #fff; }
+  .logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; margin-top: 1px; }
+  .nav { flex: 1; padding: 14px 0; overflow-y: auto; }
+  .nav-section { font-size: 10px; color: rgba(255,255,255,0.3); padding: 12px 20px 4px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 500; }
+  .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.55); transition: all 0.15s; border-left: 3px solid transparent; user-select: none; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; border-left-color: #85B7EB; font-weight: 500; }
+  .nav-item svg { flex-shrink: 0; opacity: 0.8; }
+  .nav-item.active svg { opacity: 1; }
+  .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .admin-pill { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--navy-light); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .admin-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .admin-role { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0 28px; height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: var(--shadow); }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .search-input { display: flex; align-items: center; gap: 8px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 12px; color: var(--text-muted); width: 210px; font-family: var(--font); cursor: text; }
+  .notif-btn { position: relative; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: #E24B4A; border-radius: 50%; border: 1.5px solid white; }
+  .btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: var(--font); border: none; }
+  .btn-primary { background: var(--navy); color: #fff; }
+  .btn-primary:hover { background: var(--navy-light); }
+  .btn-outline { background: transparent; border: 1px solid var(--border-strong); color: var(--text-muted); }
+  .btn-outline:hover { background: var(--bg-secondary); color: var(--text); }
+  .btn-danger { background: var(--red-50); color: var(--red-600); border: 1px solid #F09595; }
+  .btn-danger:hover { background: #F7C1C1; }
+  .btn-info { background: var(--blue-50); color: var(--blue-800); border: 1px solid var(--blue-100); }
+  .btn-info:hover { background: var(--blue-100); }
+  .btn-sm { padding: 5px 11px; font-size: 11px; border-radius: 7px; }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .section-tab { display: none; }
+  .section-tab.active { display: block; }
+
+  /* ── SECTION HEADER ── */
+  .sec-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .sec-actions { display: flex; gap: 8px; }
+
+  /* ── STATS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; box-shadow: var(--shadow); }
+  .stat-label { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+  .stat-val { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-sub { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-up { color: var(--teal-600); } .stat-down { color: var(--red-600); } .stat-neutral { color: var(--text-hint); }
+
+  /* ── TABLE ── */
+  .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+  .panel-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .panel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .panel-subtitle { font-size: 12px; color: var(--text-hint); margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 11px; font-weight: 500; color: var(--text-hint); text-align: left; padding: 10px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); letter-spacing: 0.5px; text-transform: uppercase; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 13px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-secondary); }
+  .mono { font-family: var(--font-mono); font-size: 12px; }
+
+  /* ── PILLS ── */
+  .pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .pill-green { background: var(--green-50); color: var(--green-600); }
+  .pill-amber { background: var(--amber-50); color: var(--amber-600); }
+  .pill-red { background: var(--red-50); color: var(--red-600); }
+  .pill-blue { background: var(--blue-50); color: var(--blue-800); }
+  .pill-gray { background: var(--gray-50); color: var(--gray-500); }
+  .pill-gold { background: #FAC775; color: #412402; }
+  .pill-silver { background: var(--silver-bg); color: var(--silver-text); }
+  .pill-plat { background: var(--purple-200); color: var(--purple-800); }
+  .pill-basic { background: #E8F4F8; color: #2C6B8A; border: 1px solid #B8D9E8; }
+  .pill-navy { background: var(--blue-50); color: var(--navy); }
+  .pill-teal { background: var(--teal-50); color: var(--teal-600); }
+
+  /* ── GRID LAYOUT ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+  .three-col { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 20px; }
+
+  /* ── ACTION BUTTONS IN TABLE ── */
+  .act-group { display: flex; gap: 6px; }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border-radius: var(--radius-xl); padding: 28px; width: 480px; max-width: 95vw; box-shadow: var(--shadow-md); animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .form-input { width: 100%; padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: 8px; font-family: var(--font); font-size: 13px; color: var(--text); background: var(--bg-card); outline: none; transition: border 0.15s; }
+  .form-input:focus { border-color: var(--navy-light); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-select { width: 100%; padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: 8px; font-family: var(--font); font-size: 13px; background: var(--bg-card); color: var(--text); outline: none; cursor: pointer; }
+
+  /* ── SEAT MAP ── */
+  .seat-grid { display: grid; grid-template-columns: repeat(7, 36px); gap: 5px; margin: 16px 0; justify-content: center; }
+  .seat { width: 32px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all 0.12s; }
+  .seat.avail { background: var(--green-50); color: var(--green-600); border-color: var(--green-200); }
+  .seat.taken { background: var(--red-50); color: var(--red-600); border-color: #F09595; cursor: default; }
+  .seat.aisle { background: transparent; border: none; cursor: default; }
+  .seat.avail:hover { background: var(--green-200); }
+  .seat-legend { display: flex; gap: 16px; justify-content: center; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+  .seat-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 4px; }
+
+  /* ── CARRIER LOGOS ── */
+  .carrier-badge { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .carrier-name { display: flex; align-items: center; gap: 10px; }
+
+  /* ── ACTIVITY FEED ── */
+  .activity-list { padding: 4px 0; }
+  .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--border); }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .activity-text { font-size: 13px; color: var(--text); }
+  .activity-time { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none; max-width: 320px; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: var(--teal-600); }
+  .toast.danger { background: var(--red-600); }
+  .toast.warning { background: var(--amber-600); }
+
+  /* ── FILTER TABS ── */
+  .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-tab { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg-card); transition: all 0.15s; user-select: none; }
+  .filter-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .filter-tab:hover:not(.active) { background: var(--bg-secondary); }
+
+  /* ── TABLE ROW HIDDEN STATE ── */
+  tr.row-hidden { display: none; }
+
+  /* ── ROUTE TAG ── */
+  .route-tag { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
+  .route-arrow { color: var(--text-hint); font-size: 10px; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-bar { height: 5px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--gray-100); border-radius: 3px; }
+
+  /* ── DASHBOARD SPECIFIC ── */
+  .mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 10px; }
+  .bar { background: var(--blue-100); border-radius: 3px 3px 0 0; flex: 1; transition: background 0.2s; }
+  .bar:hover { background: var(--navy-light); }
+  .bar.today { background: var(--navy); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { padding: 40px 20px; text-align: center; color: var(--text-hint); font-size: 13px; }
+  .empty-state-icon { font-size: 28px; margin-bottom: 8px; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+      </div>
+      <div>
+        <div class="logo-title">AIRPRO</div>
+        <div class="logo-sub">Flight Operations</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-section">Management</div>
+    <div class="nav-item" onclick="navigate('users', this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-3.31 2.24-5 5-5s5 1.69 5 5"/><circle cx="12" cy="5" r="2"/><path d="M11.5 14c0-1.1.3-2.1.9-2.8" stroke="currentColor" stroke-width="0.8" fill="none"/></svg>
+      Manage Users
+    </div>
+    <div class="nav-item" onclick="navigate('flights', this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M15 8v-2l-6-3.5V1.5a1 1 0 00-2 0V2.5L1 6v2l6-1.5V13l-1.5 1V15l2.5-.75L10.5 15v-1L9 13V6.5L15 8z"/></svg>
+      Manage Flights
+    </div>
+    <div class="nav-item" onclick="navigate('bookings', this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="0.5" fill="none"/><rect x="2" y="4" width="12" height="3" rx="1.5 1.5 0 0"/><path d="M5 4V3a1 1 0 012 0v1M9 4V3a1 1 0 012 0v1" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M5 10h6M5 12h4" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+      Manage Bookings
+    </div>
+    <div class="nav-item" onclick="navigate('carriers', this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="0.5" fill="none"/><rect x="1" y="3" width="14" height="3" rx="2 2 0 0"/><circle cx="4.5" cy="10" r="1"/><path d="M7 10h5" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+      Manage Carriers
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="admin-pill">
+      <div class="avatar">SA</div>
+      <div>
+        <div class="admin-name">Super Admin</div>
+        <div class="admin-role">admin@skyops.in</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div id="page-title" class="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-input">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#888780" stroke-width="1.5"/><line x1="11" y1="11" x2="15" y2="15" stroke="#888780" stroke-width="1.5"/></svg>
+        Search anything...
+      </div>
+      <div class="notif-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5F5E5A" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <button class="btn btn-primary" id="top-action-btn" onclick="handleTopAction()">+ New Flight</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════ DASHBOARD ══════════════════ -->
+    <div class="section-tab active" id="tab-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Active Users</div>
+          <div class="stat-val">1,284</div>
+          <div class="stat-sub stat-up">↑ 12% from yesterday</div>
+          <div class="mini-chart">
+            <div class="bar" style="height:55%"></div><div class="bar" style="height:70%"></div>
+            <div class="bar" style="height:60%"></div><div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:65%"></div><div class="bar today" style="height:100%"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today's Bookings</div>
+          <div class="stat-val">347</div>
+          <div class="stat-sub stat-up">↑ 8% vs yesterday</div>
+          <div class="mini-chart">
+            <div class="bar" style="height:40%"></div><div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:50%"></div><div class="bar" style="height:75%"></div>
+            <div class="bar" style="height:55%"></div><div class="bar today" style="height:85%"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Flights</div>
+          <div class="stat-val">42</div>
+          <div class="stat-sub stat-up">↑ 5 from last week</div>
+          <div class="mini-chart">
+            <div class="bar" style="height:70%"></div><div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:80%"></div><div class="bar" style="height:65%"></div>
+            <div class="bar" style="height:75%"></div><div class="bar today" style="height:90%"></div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Cancellations Today</div>
+          <div class="stat-val">6</div>
+          <div class="stat-sub stat-down">↑ 2 more than avg</div>
+          <div class="mini-chart">
+            <div class="bar" style="height:20%"></div><div class="bar" style="height:15%"></div>
+            <div class="bar" style="height:25%"></div><div class="bar" style="height:18%"></div>
+            <div class="bar" style="height:20%"></div><div class="bar today" style="height:38%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Recent Bookings</div><div class="panel-subtitle">Last 5 transactions</div></div>
+            <button class="btn btn-outline btn-sm" onclick="navigate('bookings', document.querySelector('[onclick*=bookings]'))">View all</button>
+          </div>
+          <table>
+            <thead><tr><th>Booking ID</th><th>Passenger</th><th>Route</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">#BK8821</td><td>Priya Sharma</td><td><span class="route-tag">DEL <span class="route-arrow">→</span> BOM</span></td><td>₹8,400</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td class="mono">#BK8820</td><td>Rahul Mehta</td><td><span class="route-tag">BOM <span class="route-arrow">→</span> BLR</span></td><td>₹3,200</td><td><span class="pill pill-amber">Pending</span></td></tr>
+              <tr><td class="mono">#BK8819</td><td>Anjali Verma</td><td><span class="route-tag">DEL <span class="route-arrow">→</span> CCU</span></td><td>₹5,800</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              <tr><td class="mono">#BK8817</td><td>Vikram Nair</td><td><span class="route-tag">HYD <span class="route-arrow">→</span> DEL</span></td><td>₹4,100</td><td><span class="pill pill-red">Cancelled</span></td></tr>
+              <tr><td class="mono">#BK8815</td><td>Deepa Iyer</td><td><span class="route-tag">MAA <span class="route-arrow">→</span> CCU</span></td><td>₹18,700</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Flight Status Overview</div><div class="panel-subtitle">Today's schedule</div></div>
+          </div>
+          <table>
+            <thead><tr><th>Flight</th><th>Route</th><th>Seats</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:600">6E-204</td><td><span class="route-tag">DEL <span class="route-arrow">→</span> BOM</span></td><td><span style="color:var(--green-600);font-weight:500">42/180</span></td><td><span class="pill pill-green">On Time</span></td></tr>
+              <tr><td style="font-weight:600">AI-302</td><td><span class="route-tag">BOM <span class="route-arrow">→</span> BLR</span></td><td><span style="color:var(--amber-600);font-weight:500">8/220</span></td><td><span class="pill pill-amber">Delayed</span></td></tr>
+              <tr><td style="font-weight:600">SG-410</td><td><span class="route-tag">HYD <span class="route-arrow">→</span> DEL</span></td><td><span style="color:var(--red-600);font-weight:500">0/160</span></td><td><span class="pill pill-red">Full</span></td></tr>
+              <tr><td style="font-weight:600">UK-834</td><td><span class="route-tag">MAA <span class="route-arrow">→</span> CCU</span></td><td><span style="color:var(--green-600);font-weight:500">61/150</span></td><td><span class="pill pill-green">On Time</span></td></tr>
+              <tr><td style="font-weight:600">I5-706</td><td><span class="route-tag">BLR <span class="route-arrow">→</span> PNQ</span></td><td><span style="color:var(--green-600);font-weight:500">33/120</span></td><td><span class="pill pill-green">On Time</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Recent Activity</div></div>
+        <div class="activity-list">
+          <div class="activity-item"><div class="activity-dot" style="background:var(--green-600)"></div><div><div class="activity-text">Flight 6E-204 (DEL→BOM) departed on time with 138 passengers aboard.</div><div class="activity-time">2 hours ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot" style="background:var(--amber-600)"></div><div><div class="activity-text">AI-302 delayed by 45 minutes due to crew scheduling — new ETD 10:00.</div><div class="activity-time">1 hour ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot" style="background:var(--red-600)"></div><div><div class="activity-text">Booking #BK8817 cancelled by passenger Vikram Nair. Refund initiated.</div><div class="activity-time">45 min ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot" style="background:var(--blue-800)"></div><div><div class="activity-text">New carrier registered: Star Air. 3 routes added for April 2025.</div><div class="activity-time">30 min ago</div></div></div>
+          <div class="activity-item"><div class="activity-dot" style="background:var(--green-600)"></div><div><div class="activity-text">UK-834 (MAA→CCU) check-in opened. 61 seats still available.</div><div class="activity-time">15 min ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ USERS ══════════════════ -->
+    <div class="section-tab" id="tab-users">
+      <div class="sec-header">
+        <div class="filter-tabs" id="users-filter-tabs">
+          <div class="filter-tab active" data-filter="all" onclick="filterUsers(this, 'all')">All Users</div>
+          <div class="filter-tab" data-filter="active" onclick="filterUsers(this, 'active')">Active</div>
+          <div class="filter-tab" data-filter="platinum" onclick="filterUsers(this, 'platinum')">Platinum</div>
+          <div class="filter-tab" data-filter="gold" onclick="filterUsers(this, 'gold')">Gold</div>
+          <div class="filter-tab" data-filter="silver" onclick="filterUsers(this, 'silver')">Silver</div>
+          <div class="filter-tab" data-filter="basic" onclick="filterUsers(this, 'basic')">Basic</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('add-user-modal')">+ Add User</button>
+      </div>
+      <div class="three-col">
+        <div class="stat-card"><div class="stat-label">Total Registered</div><div class="stat-val">8,412</div><div class="stat-sub stat-up">↑ 34 this week</div></div>
+        <div class="stat-card"><div class="stat-label">Active Today</div><div class="stat-val">1,284</div><div class="stat-sub stat-neutral">Resets at midnight</div></div>
+        <div class="stat-card"><div class="stat-label">Current Bookings</div><div class="stat-val">347</div><div class="stat-sub stat-up">↑ 8% vs yesterday</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Registered Users</div><div class="panel-subtitle">Complete user directory with membership & booking status</div></div>
+        </div>
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Total Bookings</th><th>Booking Status</th><th>Membership</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="users-table-body">
+            <tr data-membership="gold" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Priya Sharma</div></td>
+              <td class="mono">+91 98765 43210</td>
+              <td style="color:var(--text-muted)">priya@email.com</td>
+              <td>12</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-gold">Gold</span></td>
+              <td style="color:var(--text-muted)">Jan 2023</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="silver" data-booking-status="pending">
+              <td><div style="font-weight:500">Rahul Mehta</div></td>
+              <td class="mono">+91 87654 32109</td>
+              <td style="color:var(--text-muted)">rahul@email.com</td>
+              <td>5</td>
+              <td><span class="pill pill-amber">Pending</span></td>
+              <td><span class="pill pill-silver">Silver</span></td>
+              <td style="color:var(--text-muted)">Mar 2023</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="platinum" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Anjali Verma</div></td>
+              <td class="mono">+91 76543 21098</td>
+              <td style="color:var(--text-muted)">anjali@email.com</td>
+              <td>28</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-plat">Platinum</span></td>
+              <td style="color:var(--text-muted)">Aug 2022</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="silver" data-booking-status="cancelled">
+              <td><div style="font-weight:500">Vikram Nair</div></td>
+              <td class="mono">+91 65432 10987</td>
+              <td style="color:var(--text-muted)">vikram@email.com</td>
+              <td>3</td>
+              <td><span class="pill pill-red">Cancelled</span></td>
+              <td><span class="pill pill-silver">Silver</span></td>
+              <td style="color:var(--text-muted)">Jun 2024</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="gold" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Deepa Iyer</div></td>
+              <td class="mono">+91 54321 09876</td>
+              <td style="color:var(--text-muted)">deepa@email.com</td>
+              <td>9</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-gold">Gold</span></td>
+              <td style="color:var(--text-muted)">Feb 2023</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="platinum" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Arjun Pillai</div></td>
+              <td class="mono">+91 43210 98765</td>
+              <td style="color:var(--text-muted)">arjun@email.com</td>
+              <td>41</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-plat">Platinum</span></td>
+              <td style="color:var(--text-muted)">May 2021</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="basic" data-booking-status="pending">
+              <td><div style="font-weight:500">Sneha Kulkarni</div></td>
+              <td class="mono">+91 32109 87654</td>
+              <td style="color:var(--text-muted)">sneha@email.com</td>
+              <td>7</td>
+              <td><span class="pill pill-amber">Pending</span></td>
+              <td><span class="pill pill-basic">Basic</span></td>
+              <td style="color:var(--text-muted)">Nov 2024</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="gold" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Ravi Krishnan</div></td>
+              <td class="mono">+91 21098 76543</td>
+              <td style="color:var(--text-muted)">ravi@email.com</td>
+              <td>18</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-gold">Gold</span></td>
+              <td style="color:var(--text-muted)">Sep 2022</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="basic" data-booking-status="confirmed">
+              <td><div style="font-weight:500">Meera Joshi</div></td>
+              <td class="mono">+91 99887 65432</td>
+              <td style="color:var(--text-muted)">meera@email.com</td>
+              <td>2</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><span class="pill pill-basic">Basic</span></td>
+              <td style="color:var(--text-muted)">Feb 2025</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+            <tr data-membership="basic" data-booking-status="cancelled">
+              <td><div style="font-weight:500">Karan Desai</div></td>
+              <td class="mono">+91 77665 54433</td>
+              <td style="color:var(--text-muted)">karan@email.com</td>
+              <td>1</td>
+              <td><span class="pill pill-red">Cancelled</span></td>
+              <td><span class="pill pill-basic">Basic</span></td>
+              <td style="color:var(--text-muted)">Jan 2025</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm">Edit</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="users-empty" class="empty-state" style="display:none">
+          <div class="empty-state-icon">👤</div>
+          No users found for this filter.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FLIGHTS ══════════════════ -->
+    <div class="section-tab" id="tab-flights">
+      <div class="sec-header">
+        <div class="filter-tabs" id="flights-filter-tabs">
+          <div class="filter-tab active" data-filter="all" onclick="filterFlights(this, 'all')">All Flights</div>
+          <div class="filter-tab" data-filter="ontime" onclick="filterFlights(this, 'ontime')">On Time</div>
+          <div class="filter-tab" data-filter="delayed" onclick="filterFlights(this, 'delayed')">Delayed</div>
+          <div class="filter-tab" data-filter="full" onclick="filterFlights(this, 'full')">Full</div>
+          <div class="filter-tab" data-filter="cancelled" onclick="filterFlights(this, 'cancelled')">Cancelled</div>
+        </div>
+        <div class="sec-actions">
+          <button class="btn btn-outline btn-sm" onclick="openModal('seat-modal')">Check Seats</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('schedule-modal')">+ Schedule Flight</button>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="stat-card"><div class="stat-label">Total Scheduled</div><div class="stat-val">42</div><div class="stat-sub stat-neutral">Today</div></div>
+        <div class="stat-card"><div class="stat-label">On Time</div><div class="stat-val">36</div><div class="stat-sub stat-up">85.7% on-time rate</div></div>
+        <div class="stat-card"><div class="stat-label">Fully Booked</div><div class="stat-val">4</div><div class="stat-sub stat-neutral">Available for delete</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Flight Management</div><div class="panel-subtitle">Schedule, reschedule, cancel and manage seat availability</div></div>
+        <table>
+          <thead><tr><th>Flight No.</th><th>Carrier</th><th>Route</th><th>Date & Time</th><th>Dep / Arr</th><th>Seat Availability</th><th>Class</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="flights-table-body">
+            <tr data-status="ontime">
+              <td style="font-weight:600">6E-204</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--blue-50);color:var(--blue-800)">6E</div>IndiGo</div></td>
+              <td><span class="route-tag">DEL <span class="route-arrow">→</span> BOM</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 06:30</td>
+              <td style="font-size:12px;color:var(--text-muted)">06:30 / 08:45</td>
+              <td><div style="font-size:12px"><span style="color:var(--green-600);font-weight:600">42</span> <span style="color:var(--text-hint)">/ 180</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:77%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-blue">Economy</span></td>
+              <td><span class="pill pill-green">On Time</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm" onclick="openModal('reschedule-modal')">Reschedule</button><button class="btn btn-danger btn-sm" onclick="confirmCancel('6E-204')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="delayed">
+              <td style="font-weight:600">AI-302</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--coral-50);color:var(--coral-600)">AI</div>Air India</div></td>
+              <td><span class="route-tag">BOM <span class="route-arrow">→</span> BLR</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 09:15</td>
+              <td style="font-size:12px;color:var(--text-muted)">10:00 / 11:50</td>
+              <td><div style="font-size:12px"><span style="color:var(--amber-600);font-weight:600">8</span> <span style="color:var(--text-hint)">/ 220</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:96%;background:#FAC775"></div></div></td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td><span class="pill pill-amber">Delayed</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm" onclick="openModal('reschedule-modal')">Reschedule</button><button class="btn btn-danger btn-sm" onclick="confirmCancel('AI-302')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="full">
+              <td style="font-weight:600">SG-410</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--amber-50);color:var(--amber-600)">SG</div>SpiceJet</div></td>
+              <td><span class="route-tag">HYD <span class="route-arrow">→</span> DEL</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 11:45</td>
+              <td style="font-size:12px;color:var(--text-muted)">11:45 / 14:20</td>
+              <td><div style="font-size:12px"><span style="color:var(--red-600);font-weight:600">0</span> <span style="color:var(--text-hint)">/ 160</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:100%;background:#F09595"></div></div></td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td><span class="pill pill-red">Full</span></td>
+              <td><div class="act-group"><button class="btn btn-danger btn-sm" onclick="deleteFlightConfirm('SG-410')">Delete</button></div></td>
+            </tr>
+            <tr data-status="ontime">
+              <td style="font-weight:600">UK-834</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--purple-50);color:var(--purple-600)">UK</div>Vistara</div></td>
+              <td><span class="route-tag">MAA <span class="route-arrow">→</span> CCU</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 14:20</td>
+              <td style="font-size:12px;color:var(--text-muted)">14:20 / 17:05</td>
+              <td><div style="font-size:12px"><span style="color:var(--green-600);font-weight:600">61</span> <span style="color:var(--text-hint)">/ 150</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:59%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-plat">Business</span></td>
+              <td><span class="pill pill-green">On Time</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm" onclick="openModal('reschedule-modal')">Reschedule</button><button class="btn btn-danger btn-sm" onclick="confirmCancel('UK-834')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="ontime">
+              <td style="font-weight:600">I5-706</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--teal-50);color:var(--teal-600)">I5</div>Air Asia</div></td>
+              <td><span class="route-tag">BLR <span class="route-arrow">→</span> PNQ</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 16:00</td>
+              <td style="font-size:12px;color:var(--text-muted)">16:00 / 17:15</td>
+              <td><div style="font-size:12px"><span style="color:var(--green-600);font-weight:600">33</span> <span style="color:var(--text-hint)">/ 120</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:72%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td><span class="pill pill-green">On Time</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm" onclick="openModal('reschedule-modal')">Reschedule</button><button class="btn btn-danger btn-sm" onclick="confirmCancel('I5-706')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="cancelled">
+              <td style="font-weight:600">SG-218</td>
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--amber-50);color:var(--amber-600)">SG</div>SpiceJet</div></td>
+              <td><span class="route-tag">DEL <span class="route-arrow">→</span> HYD</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar, 08:00</td>
+              <td style="font-size:12px;color:var(--text-muted)">— / —</td>
+              <td><div style="font-size:12px"><span style="color:var(--text-hint);font-weight:600">—</span></div><div class="prog-bar" style="width:100px"><div class="prog-fill" style="width:0%;background:var(--gray-100)"></div></div></td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td><span class="pill pill-red">Cancelled</span></td>
+              <td><div class="act-group"><span style="font-size:11px;color:var(--text-hint)">No actions available</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="flights-empty" class="empty-state" style="display:none">
+          <div class="empty-state-icon">✈️</div>
+          No flights found for this status.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ BOOKINGS ══════════════════ -->
+    <div class="section-tab" id="tab-bookings">
+      <div class="sec-header">
+        <div class="filter-tabs" id="bookings-filter-tabs">
+          <div class="filter-tab active" data-filter="all" onclick="filterBookings(this, 'all')">All Bookings</div>
+          <div class="filter-tab" data-filter="confirmed" onclick="filterBookings(this, 'confirmed')">Confirmed</div>
+          <div class="filter-tab" data-filter="pending" onclick="filterBookings(this, 'pending')">Pending</div>
+          <div class="filter-tab" data-filter="cancelled" onclick="filterBookings(this, 'cancelled')">Cancelled</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('add-booking-modal')">+ New Booking</button>
+      </div>
+      <div class="three-col">
+        <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-val">5,821</div><div class="stat-sub stat-up">↑ 12% this month</div></div>
+        <div class="stat-card"><div class="stat-label">Revenue Today</div><div class="stat-val">₹2.4L</div><div class="stat-sub stat-up">↑ 8% vs yesterday</div></div>
+        <div class="stat-card"><div class="stat-label">Cancellation Rate</div><div class="stat-val">3.2%</div><div class="stat-sub stat-down">↑ 0.4% this week</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">All Bookings</div><div class="panel-subtitle">Complete booking records with class, seat, and payment details</div></div>
+        <table>
+          <thead><tr><th>Booking ID</th><th>Passenger</th><th>Flight No.</th><th>Route</th><th>Date</th><th>Class</th><th>Seat</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="bookings-table-body">
+            <tr data-status="confirmed">
+              <td class="mono">#BK8821</td><td>Priya Sharma</td><td style="font-weight:600">6E-204</td>
+              <td><span class="route-tag">DEL <span class="route-arrow">→</span> BOM</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar 2025</td>
+              <td><span class="pill pill-plat">Business</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">12A</td>
+              <td style="font-weight:500">₹8,400</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-danger btn-sm" onclick="showToast('Booking cancelled','danger')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="pending">
+              <td class="mono">#BK8820</td><td>Rahul Mehta</td><td style="font-weight:600">AI-302</td>
+              <td><span class="route-tag">BOM <span class="route-arrow">→</span> BLR</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar 2025</td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">24F</td>
+              <td style="font-weight:500">₹3,200</td>
+              <td><span class="pill pill-amber">Pending</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm" onclick="showToast('Booking confirmed','success')">Confirm</button></div></td>
+            </tr>
+            <tr data-status="confirmed">
+              <td class="mono">#BK8819</td><td>Anjali Verma</td><td style="font-weight:600">6E-204</td>
+              <td><span class="route-tag">DEL <span class="route-arrow">→</span> BOM</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar 2025</td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">15C</td>
+              <td style="font-weight:500">₹5,800</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-danger btn-sm" onclick="showToast('Booking cancelled','danger')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="cancelled">
+              <td class="mono">#BK8817</td><td>Vikram Nair</td><td style="font-weight:600">SG-410</td>
+              <td><span class="route-tag">HYD <span class="route-arrow">→</span> DEL</span></td>
+              <td style="color:var(--text-muted);font-size:12px">26 Mar 2025</td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">8C</td>
+              <td style="font-weight:500">₹4,100</td>
+              <td><span class="pill pill-red">Cancelled</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button></div></td>
+            </tr>
+            <tr data-status="confirmed">
+              <td class="mono">#BK8815</td><td>Deepa Iyer</td><td style="font-weight:600">UK-834</td>
+              <td><span class="route-tag">MAA <span class="route-arrow">→</span> CCU</span></td>
+              <td style="color:var(--text-muted);font-size:12px">25 Mar 2025</td>
+              <td><span class="pill pill-blue">First</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">2A</td>
+              <td style="font-weight:500">₹18,700</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-danger btn-sm" onclick="showToast('Booking cancelled','danger')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="confirmed">
+              <td class="mono">#BK8812</td><td>Arjun Pillai</td><td style="font-weight:600">I5-706</td>
+              <td><span class="route-tag">BLR <span class="route-arrow">→</span> PNQ</span></td>
+              <td style="color:var(--text-muted);font-size:12px">25 Mar 2025</td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">33D</td>
+              <td style="font-weight:500">₹2,800</td>
+              <td><span class="pill pill-green">Confirmed</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-danger btn-sm" onclick="showToast('Booking cancelled','danger')">Cancel</button></div></td>
+            </tr>
+            <tr data-status="pending">
+              <td class="mono">#BK8809</td><td>Sneha Kulkarni</td><td style="font-weight:600">AI-302</td>
+              <td><span class="route-tag">BOM <span class="route-arrow">→</span> BLR</span></td>
+              <td style="color:var(--text-muted);font-size:12px">27 Mar 2025</td>
+              <td><span class="pill pill-gray">Economy</span></td>
+              <td style="font-family:var(--font-mono);font-size:12px">18B</td>
+              <td style="font-weight:500">₹3,500</td>
+              <td><span class="pill pill-amber">Pending</span></td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">View</button><button class="btn btn-outline btn-sm" onclick="showToast('Booking confirmed','success')">Confirm</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="bookings-empty" class="empty-state" style="display:none">
+          <div class="empty-state-icon">🗒️</div>
+          No bookings found for this filter.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ CARRIERS ══════════════════ -->
+    <div class="section-tab" id="tab-carriers">
+      <div class="sec-header">
+        <div class="filter-tabs" id="carriers-filter-tabs">
+          <div class="filter-tab active" data-filter="all" onclick="filterCarriers(this, 'all')">All Carriers</div>
+          <div class="filter-tab" data-filter="active" onclick="filterCarriers(this, 'active')">Active</div>
+          <div class="filter-tab" data-filter="delayed" onclick="filterCarriers(this, 'delayed')">Delayed</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('add-carrier-modal')">+ Add Carrier</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Carriers</div><div class="stat-val">8</div><div class="stat-sub stat-up">↑ 1 new this month</div></div>
+        <div class="stat-card"><div class="stat-label">Total Active Flights</div><div class="stat-val">66</div><div class="stat-sub stat-neutral">Across all carriers</div></div>
+        <div class="stat-card"><div class="stat-label">Total Routes</div><div class="stat-val">34</div><div class="stat-sub stat-up">↑ 3 new routes</div></div>
+        <div class="stat-card"><div class="stat-label">Avg On-Time Rate</div><div class="stat-val">87%</div><div class="stat-sub stat-up">↑ 2% vs last month</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Carrier Management</div><div class="panel-subtitle">Airlines, routes, flight status and recent activity</div></div>
+        <table>
+          <thead><tr><th>Carrier</th><th>Code</th><th>Active Flights</th><th>Total Flights</th><th>Routes</th><th>On-Time Rate</th><th>Status</th><th>Recent Activity</th><th>Actions</th></tr></thead>
+          <tbody id="carriers-table-body">
+            <tr data-status="active">
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--blue-50);color:var(--blue-800)">6E</div><div><div style="font-weight:600">IndiGo</div><div style="font-size:11px;color:var(--text-hint)">InterGlobe Aviation</div></div></div></td>
+              <td class="mono">IATA: 6E</td>
+              <td><span style="color:var(--green-600);font-weight:600">24</span></td>
+              <td>38</td>
+              <td>12 routes</td>
+              <td><div style="font-size:12px;font-weight:500;color:var(--green-600)">92%</div><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:92%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-green">Active</span></td>
+              <td style="font-size:11px;color:var(--text-muted);max-width:160px">6E-204 departed on time · 2h ago</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">Manage</button></div></td>
+            </tr>
+            <tr data-status="delayed">
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--coral-50);color:var(--coral-600)">AI</div><div><div style="font-weight:600">Air India</div><div style="font-size:11px;color:var(--text-hint)">Air India Ltd.</div></div></div></td>
+              <td class="mono">IATA: AI</td>
+              <td><span style="color:var(--green-600);font-weight:600">18</span></td>
+              <td>30</td>
+              <td>9 routes</td>
+              <td><div style="font-size:12px;font-weight:500;color:var(--amber-600)">78%</div><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:78%;background:#FAC775"></div></div></td>
+              <td><span class="pill pill-amber">Delayed</span></td>
+              <td style="font-size:11px;color:var(--text-muted);max-width:160px">AI-302 delayed 45 min · 1h ago</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">Manage</button></div></td>
+            </tr>
+            <tr data-status="active">
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--amber-50);color:var(--amber-600)">SG</div><div><div style="font-weight:600">SpiceJet</div><div style="font-size:11px;color:var(--text-hint)">SpiceJet Ltd.</div></div></div></td>
+              <td class="mono">IATA: SG</td>
+              <td><span style="color:var(--green-600);font-weight:600">10</span></td>
+              <td>22</td>
+              <td>7 routes</td>
+              <td><div style="font-size:12px;font-weight:500;color:var(--green-600)">84%</div><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:84%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-green">Active</span></td>
+              <td style="font-size:11px;color:var(--text-muted);max-width:160px">SG-410 fully booked · 30m ago</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">Manage</button></div></td>
+            </tr>
+            <tr data-status="active">
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--purple-50);color:var(--purple-600)">UK</div><div><div style="font-weight:600">Vistara</div><div style="font-size:11px;color:var(--text-hint)">TATA SIA Airlines</div></div></div></td>
+              <td class="mono">IATA: UK</td>
+              <td><span style="color:var(--green-600);font-weight:600">14</span></td>
+              <td>20</td>
+              <td>6 routes</td>
+              <td><div style="font-size:12px;font-weight:500;color:var(--green-600)">96%</div><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:96%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-green">Active</span></td>
+              <td style="font-size:11px;color:var(--text-muted);max-width:160px">UK-834 check-in open · 15m ago</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">Manage</button></div></td>
+            </tr>
+            <tr data-status="active">
+              <td><div class="carrier-name"><div class="carrier-badge" style="background:var(--teal-50);color:var(--teal-600)">I5</div><div><div style="font-weight:600">Air Asia India</div><div style="font-size:11px;color:var(--text-hint)">Air Asia (India) Ltd.</div></div></div></td>
+              <td class="mono">IATA: I5</td>
+              <td><span style="color:var(--green-600);font-weight:600">10</span></td>
+              <td>16</td>
+              <td>5 routes</td>
+              <td><div style="font-size:12px;font-weight:500;color:var(--green-600)">89%</div><div class="prog-bar" style="width:80px"><div class="prog-fill" style="width:89%;background:var(--green-200)"></div></div></td>
+              <td><span class="pill pill-green">Active</span></td>
+              <td style="font-size:11px;color:var(--text-muted);max-width:160px">I5-706 boarding soon · 5m ago</td>
+              <td><div class="act-group"><button class="btn btn-info btn-sm">Manage</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="carriers-empty" class="empty-state" style="display:none">
+          <div class="empty-state-icon">🏢</div>
+          No carriers found for this filter.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Schedule Flight Modal -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal">
+    <div class="modal-title">Schedule New Flight</div>
+    <div class="modal-sub">Add a new flight to today's operations schedule.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Flight Number</label><input class="form-input" placeholder="e.g. 6E-310" /></div>
+      <div class="form-group"><label class="form-label">Carrier</label>
+        <select class="form-select"><option>IndiGo</option><option>Air India</option><option>SpiceJet</option><option>Vistara</option><option>Air Asia India</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Origin</label><input class="form-input" placeholder="DEL" /></div>
+      <div class="form-group"><label class="form-label">Destination</label><input class="form-input" placeholder="BOM" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Departure</label><input class="form-input" type="datetime-local" /></div>
+      <div class="form-group"><label class="form-label">Arrival</label><input class="form-input" type="datetime-local" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Total Seats</label><input class="form-input" placeholder="180" type="number" /></div>
+      <div class="form-group"><label class="form-label">Class</label>
+        <select class="form-select"><option>Economy</option><option>Business</option><option>First</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('schedule-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('schedule-modal');showToast('Flight scheduled successfully','success')">Schedule Flight</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reschedule Modal -->
+<div class="modal-overlay" id="reschedule-modal">
+  <div class="modal">
+    <div class="modal-title">Reschedule Flight</div>
+    <div class="modal-sub">Update the departure and arrival times for this flight.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">New Departure</label><input class="form-input" type="datetime-local" /></div>
+      <div class="form-group"><label class="form-label">New Arrival</label><input class="form-input" type="datetime-local" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Reason for Reschedule</label>
+      <select class="form-select"><option>Crew Scheduling</option><option>Technical Issue</option><option>Weather</option><option>ATC Delay</option><option>Other</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes (optional)</label><input class="form-input" placeholder="Additional details..." /></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('reschedule-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('reschedule-modal');showToast('Flight rescheduled','success')">Confirm Reschedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- Seat Availability Modal -->
+<div class="modal-overlay" id="seat-modal">
+  <div class="modal" style="width:520px">
+    <div class="modal-title">Seat Availability — 6E-204</div>
+    <div class="modal-sub">DEL → BOM &nbsp;·&nbsp; 26 Mar 06:30 &nbsp;·&nbsp; Economy</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-align:center">Rows 1–5 shown (Business) · Rows 6–26 (Economy)</div>
+    <div class="seat-grid" id="seat-grid"></div>
+    <div class="seat-legend">
+      <span><span class="seat-dot" style="background:var(--green-50);border:1px solid var(--green-200)"></span>Available</span>
+      <span><span class="seat-dot" style="background:var(--red-50);border:1px solid #F09595"></span>Taken</span>
+    </div>
+    <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--text-muted)">
+      <span style="color:var(--green-600);font-weight:600">42</span> available &nbsp;·&nbsp; <span style="color:var(--red-600);font-weight:600">138</span> taken &nbsp;·&nbsp; 180 total
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('seat-modal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="add-user-modal">
+  <div class="modal">
+    <div class="modal-title">Add New User</div>
+    <div class="modal-sub">Register a new passenger in the system.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" placeholder="Priya Sharma" /></div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" placeholder="+91 98765 43210" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" placeholder="user@email.com" type="email" /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Membership</label>
+        <select class="form-select"><option>Basic</option><option>Silver</option><option>Gold</option><option>Platinum</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-select"><option>Active</option><option>Inactive</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-user-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('add-user-modal');showToast('User registered successfully','success')">Add User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Booking Modal -->
+<div class="modal-overlay" id="add-booking-modal">
+  <div class="modal">
+    <div class="modal-title">New Booking</div>
+    <div class="modal-sub">Create a manual booking for a passenger.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Passenger Name</label><input class="form-input" placeholder="Full name" /></div>
+      <div class="form-group"><label class="form-label">Flight Number</label><input class="form-input" placeholder="6E-204" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Class</label>
+        <select class="form-select"><option>Economy</option><option>Business</option><option>First</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Seat Number</label><input class="form-input" placeholder="12A" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Travel Date</label><input class="form-input" type="date" /></div>
+      <div class="form-group"><label class="form-label">Amount (₹)</label><input class="form-input" placeholder="8400" type="number" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-booking-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('add-booking-modal');showToast('Booking created successfully','success')">Create Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Carrier Modal -->
+<div class="modal-overlay" id="add-carrier-modal">
+  <div class="modal">
+    <div class="modal-title">Add New Carrier</div>
+    <div class="modal-sub">Register a new airline carrier to the platform.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Airline Name</label><input class="form-input" placeholder="Star Air" /></div>
+      <div class="form-group"><label class="form-label">IATA Code</label><input class="form-input" placeholder="S5" maxlength="3" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Legal Entity Name</label><input class="form-input" placeholder="Star Air (India) Ltd." /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Total Fleet Size</label><input class="form-input" placeholder="24" type="number" /></div>
+      <div class="form-group"><label class="form-label">Number of Routes</label><input class="form-input" placeholder="8" type="number" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('add-carrier-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('add-carrier-modal');showToast('Carrier added successfully','success')">Add Carrier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const pageTitles = { dashboard: 'Dashboard', users: 'Manage Users', flights: 'Manage Flights', bookings: 'Manage Bookings', carriers: 'Manage Carriers' };
+  const topActions = { dashboard: null, users: '+ Add User', flights: '+ Schedule Flight', bookings: '+ New Booking', carriers: '+ Add Carrier' };
+  const topModalMap = { users: 'add-user-modal', flights: 'schedule-modal', bookings: 'add-booking-modal', carriers: 'add-carrier-modal' };
+  let currentSection = 'dashboard';
+
+  function navigate(section, el) {
+    document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + section).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('page-title').textContent = pageTitles[section];
+    const btn = document.getElementById('top-action-btn');
+    if (topActions[section]) { btn.style.display = ''; btn.textContent = topActions[section]; }
+    else btn.style.display = 'none';
+    currentSection = section;
+  }
+
+  function handleTopAction() {
+    const m = topModalMap[currentSection];
+    if (m) openModal(m);
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    if (id === 'seat-modal') buildSeatMap();
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+  });
+
+  /* ── GENERIC FILTER HELPER ── */
+  function applyFilter(tbodyId, emptyId, filterAttr, value) {
+    const tbody = document.getElementById(tbodyId);
+    const empty = document.getElementById(emptyId);
+    const rows = tbody.querySelectorAll('tr');
+    let visible = 0;
+    rows.forEach(row => {
+      const rowVal = row.getAttribute(filterAttr) || '';
+      const show = value === 'all' || rowVal === value;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  function setActiveTab(tabsContainerId, clickedEl) {
+    document.getElementById(tabsContainerId).querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    clickedEl.classList.add('active');
+  }
+
+  /* ── USERS FILTER ── */
+  function filterUsers(el, value) {
+    setActiveTab('users-filter-tabs', el);
+    if (value === 'active') {
+      // active = confirmed booking status
+      applyFilter('users-table-body', 'users-empty', 'data-booking-status', 'confirmed');
+    } else {
+      applyFilter('users-table-body', 'users-empty', 'data-membership', value);
+    }
+  }
+
+  /* ── FLIGHTS FILTER ── */
+  function filterFlights(el, value) {
+    setActiveTab('flights-filter-tabs', el);
+    applyFilter('flights-table-body', 'flights-empty', 'data-status', value);
+  }
+
+  /* ── BOOKINGS FILTER ── */
+  function filterBookings(el, value) {
+    setActiveTab('bookings-filter-tabs', el);
+    applyFilter('bookings-table-body', 'bookings-empty', 'data-status', value);
+  }
+
+  /* ── CARRIERS FILTER ── */
+  function filterCarriers(el, value) {
+    setActiveTab('carriers-filter-tabs', el);
+    applyFilter('carriers-table-body', 'carriers-empty', 'data-status', value);
+  }
+
+  function confirmCancel(flightNo) {
+    if (confirm('Cancel flight ' + flightNo + '? This cannot be undone.')) {
+      showToast('Flight ' + flightNo + ' cancelled', 'danger');
+    }
+  }
+
+  function deleteFlightConfirm(flightNo) {
+    if (confirm('Delete ' + flightNo + '? Flight has 0 seats and no active bookings.')) {
+      showToast('Flight ' + flightNo + ' deleted', 'warning');
+    }
+  }
+
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function buildSeatMap() {
+    const grid = document.getElementById('seat-grid');
+    grid.innerHTML = '';
+    const cols = ['A','B','C','','D','E','F'];
+    const taken = new Set([1,3,5,8,10,12,14,15,16,17,18,20,22,24,25,26,28,30,32,34,36,38,40,42,44,45,47,49,51,53,55,57,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,103,105,107,109,111,113,115,117,119,121,123,125,127,129,130,131,133,135,137,139,141,143,145,147,149,151,153,155,157,159,161,163,165,167,169,171,173,175,177,179,181,183,185,187,189,191,193,195,197,199,201,203,205,207,209,211,213,215,217,219,221,223,225,227,229,231,233,235,237,239,241,243,245,247,249,251,253]);
+    let seatNum = 0;
+    for (let row = 1; row <= 26; row++) {
+      cols.forEach(col => {
+        const s = document.createElement('div');
+        if (col === '') { s.className = 'seat aisle'; grid.appendChild(s); return; }
+        seatNum++;
+        const isTaken = taken.has(seatNum);
+        s.className = 'seat ' + (isTaken ? 'taken' : 'avail');
+        s.textContent = row + col;
+        if (!isTaken) s.onclick = () => showToast('Seat ' + row + col + ' selected', 'success');
+        grid.appendChild(s);
+      });
+    }
+  }
+
+  // hide top action for dashboard on init
+  document.getElementById('top-action-btn').style.display = 'none';
+</script>
+</body>
+</html>

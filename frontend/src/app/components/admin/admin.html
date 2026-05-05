@@ -1,0 +1,86 @@
+<div class="flex h-screen bg-[#F4F3EF] font-sans overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-[230px] min-w-[230px] bg-[#042C53] flex flex-col h-screen text-white">
+        <!-- Logo -->
+        <div class="p-5 border-b border-white/10 flex items-center gap-3">
+            <div class="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-white/90 text-[20px]">flight_takeoff</span>
+            </div>
+            <div>
+                <div class="font-bold text-base tracking-wide">AIRPRO</div>
+                <div class="text-[10px] text-white/40 tracking-wider">Flight Operations</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex-1 overflow-y-auto py-4">
+            <div class="text-[10px] text-white/30 px-5 pb-1 uppercase tracking-widest font-medium">Overview</div>
+            <a routerLink="/admin/dashboard" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium" 
+               [routerLinkActiveOptions]="{exact: true}"
+               (click)="setPageTitle('Dashboard')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                Dashboard
+            </a>
+
+            <div class="text-[10px] text-white/30 px-5 pt-4 pb-1 uppercase tracking-widest font-medium">Management</div>
+            <a routerLink="/admin/users" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
+               (click)="setPageTitle('Manage Users')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">group</span>
+                Manage Users
+            </a>
+            <a routerLink="/admin/flights" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
+               (click)="setPageTitle('Manage Flights')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">flight</span>
+                Manage Flights
+            </a>
+            <a routerLink="/admin/bookings" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
+               (click)="setPageTitle('Manage Bookings')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">book_online</span>
+                Manage Bookings
+            </a>
+            <a routerLink="/admin/carriers" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
+               (click)="setPageTitle('Manage Carriers')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">airlines</span>
+                Manage Carriers
+            </a>
+        </div>
+
+        <!-- Admin Profile -->
+        <div class="p-4 border-t border-white/10 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-[#185FA5] flex items-center justify-center text-[11px] font-bold">SA</div>
+            <div>
+                <div class="text-xs font-medium text-white/80">Super Admin</div>
+                <div class="text-[10px] text-white/40">admin@skyops.in</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Topbar -->
+        <header class="h-14 bg-white border-b border-slate-200/60 flex items-center justify-between px-7 shadow-sm shrink-0">
+            <h1 class="text-[15px] font-semibold text-slate-800">{{ pageTitle }}</h1>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-[#F1EFE8] border border-slate-200/60 rounded-lg px-3 py-1.5 w-[210px]">
+                    <span class="material-symbols-outlined text-slate-400 text-[16px]">search</span>
+                    <input type="text" placeholder="Search anything..." class="bg-transparent border-none outline-none text-xs text-slate-600 w-full">
+                </div>
+                <button class="relative w-9 h-9 rounded-lg border border-slate-200/60 flex items-center justify-center hover:bg-slate-50 transition-colors">
+                    <span class="material-symbols-outlined text-slate-500 text-[20px]">notifications</span>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Routing -->
+        <main class="flex-1 overflow-y-auto p-7">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>
