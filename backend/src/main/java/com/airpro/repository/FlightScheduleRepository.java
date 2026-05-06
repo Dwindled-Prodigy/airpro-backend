@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface FlightScheduleRepository extends JpaRepository<FlightSchedule, Long> {
     List<FlightSchedule> findByFlightOriginAndFlightDestinationAndTravelDate(String origin, String destination, LocalDate travelDate);
+    List<FlightSchedule> findByFlightId(Long flightId);
 }

@@ -38,6 +38,11 @@ public class AdminController {
         return ResponseEntity.ok(adminService.createSchedule(request));
     }
 
+    @PostMapping("/schedules/full")
+    public ResponseEntity<ApiResponse<FlightSchedule>> createFullSchedule(@RequestBody ScheduleRequest request) {
+        return ResponseEntity.ok(adminService.createFullSchedule(request));
+    }
+
     @PostMapping("/inventory")
     public ResponseEntity<ApiResponse<FlightSeatInventory>> createInventory(@RequestBody InventoryRequest request) {
         return ResponseEntity.ok(adminService.createInventory(request));
@@ -71,5 +76,30 @@ public class AdminController {
     @GetMapping("/bookings")
     public ResponseEntity<ApiResponse<java.util.List<com.airpro.entity.Booking>>> getAllBookings() {
         return ResponseEntity.ok(adminService.getAllBookings());
+    }
+
+    @DeleteMapping("/carriers/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteCarrier(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteCarrier(id));
+    }
+
+    @DeleteMapping("/flights/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteFlight(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteFlight(id));
+    }
+
+    @DeleteMapping("/schedules/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteSchedule(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteSchedule(id));
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteUser(id));
+    }
+
+    @DeleteMapping("/bookings/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.deleteBooking(id));
     }
 }

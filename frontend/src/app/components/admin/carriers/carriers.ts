@@ -50,4 +50,15 @@ export class AdminCarriers implements OnInit {
       }
     });
   }
+
+  deleteCarrier(id: number) {
+    if (confirm("Are you sure you want to delete this carrier?")) {
+      this.adminData.deleteCarrier(id).subscribe({
+        next: (res) => {
+          if (res.success) this.loadCarriers();
+        },
+        error: (err) => alert("Cannot delete carrier (it may have flights attached).")
+      });
+    }
+  }
 }

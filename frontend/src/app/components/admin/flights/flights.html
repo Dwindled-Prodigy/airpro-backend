@@ -46,8 +46,11 @@
                         <span *ngIf="!flight.refundAllowed" class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-700">No</span>
                     </td>
                     <td class="py-4 px-6 text-right">
-                        <button class="text-slate-400 hover:text-[#185FA5] transition-colors p-1">
+                        <button class="text-slate-400 hover:text-[#185FA5] transition-colors p-1 mr-2">
                             <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                        <button (click)="deleteFlight(flight.id)" class="text-red-400 hover:text-red-600 transition-colors p-1">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </td>
                 </tr>

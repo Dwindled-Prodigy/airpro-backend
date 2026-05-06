@@ -23,4 +23,16 @@ public class BookingController {
         String email = authentication.getName(); // Extracted from JWT
         return ResponseEntity.ok(bookingService.bookFlight(email, request));
     }
+
+    @GetMapping("/my-bookings")
+    public ResponseEntity<ApiResponse<java.util.List<com.airpro.entity.Booking>>> getMyBookings(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(bookingService.getMyBookings(email));
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<String>> cancelBooking(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(bookingService.cancelBooking(id, email));
+    }
 }

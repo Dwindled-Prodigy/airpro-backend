@@ -21,6 +21,7 @@
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">User ID</th>
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Passengers</th>
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Total Fare</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -38,9 +39,14 @@
                           {{ booking.seatsBooked }}
                       </td>
                       <td class="py-4 px-6 text-sm font-black text-slate-900 text-right">₹{{ booking.totalAmount | number:'1.0-0' }}</td>
+                      <td class="py-4 px-6 text-right">
+                          <button (click)="deleteBooking(booking.id)" class="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete Booking">
+                              <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                      </td>
                   </tr>
                   <tr *ngIf="bookings.length === 0">
-                      <td colspan="5" class="py-12 text-center text-slate-500 font-medium">
+                      <td colspan="6" class="py-12 text-center text-slate-500 font-medium">
                           No bookings found.
                       </td>
                   </tr>

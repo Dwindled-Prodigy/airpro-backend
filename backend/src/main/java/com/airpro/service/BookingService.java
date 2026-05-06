@@ -86,4 +86,37 @@ public class BookingService {
 
         return ApiResponse.success(response, "Booking successful");
     }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<java.util.List<Booking>> getMyBookings(String userEmail) {
+        User user = userRepo.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return ApiResponse.success(bookingRepo.findByUserId(user.getId()), "Bookings retrieved successfully");
+    }
+
+    @Transactional
+    public ApiResponse<String> cancelBooking(Long id, String userEmail) {
+        Booking booking = bookingRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+
+        if (!booking.getUser().getEmail().equals(userEmail)) {
+            throw new SecurityException("You do not have permission to cancel this booking");
+        }
+
+        if (booking.getStatus() == Booking.Status.CANCELLED) {
+            throw new IllegalArgumentException("Booking is already cancelled");
+        }
+
+        booking.setStatus(Booking.Status.CANCELLED);
+        bookingRepo.save(booking);
+
+        FlightSeatInventory inventory = inventoryRepo.findByFlightScheduleIdAndSeatCategoryId(
+                booking.getFlightSchedule().getId(), booking.getSeatCategory().getId()
+        ).orElseThrow(() -> new IllegalArgumentException("Seat inventory not found"));
+
+        inventory.setAvailableSeats(inventory.getAvailableSeats() + booking.getSeatsBooked());
+        inventoryRepo.save(inventory);
+
+        return ApiResponse.success("Cancelled", "Booking cancelled successfully and seats restored");
+    }
 }

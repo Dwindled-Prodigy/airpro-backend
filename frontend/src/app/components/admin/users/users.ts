@@ -26,4 +26,15 @@ export class AdminUsers implements OnInit {
       this.isLoading = false;
     });
   }
+
+  deleteUser(id: number) {
+    if (confirm("Are you sure you want to delete this user?")) {
+      this.adminDataService.deleteUser(id).subscribe({
+        next: (res) => {
+          if (res.success) this.fetchUsers();
+        },
+        error: (err) => alert("Cannot delete user (they may have bookings attached).")
+      });
+    }
+  }
 }

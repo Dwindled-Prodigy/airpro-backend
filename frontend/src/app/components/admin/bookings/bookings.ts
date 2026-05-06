@@ -26,4 +26,15 @@ export class AdminBookings implements OnInit {
       this.isLoading = false;
     });
   }
+
+  deleteBooking(id: number) {
+    if (confirm("Are you sure you want to delete this booking?")) {
+      this.adminDataService.deleteBooking(id).subscribe({
+        next: (res) => {
+          if (res.success) this.fetchBookings();
+        },
+        error: (err) => alert("Cannot delete booking.")
+      });
+    }
+  }
 }

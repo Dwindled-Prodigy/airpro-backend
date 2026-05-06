@@ -39,7 +39,7 @@
             <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10">
                 <h3 class="font-headline text-lg font-bold mb-4">Seat Guide</h3>
                 <p class="text-on-surface-variant text-sm mb-8 leading-relaxed">
-                    Select your preferred seat. You must select exactly <strong>{{ requiredSeats }}</strong> seat(s) in the <strong>{{ category.categoryName }}</strong> section.
+                    Select your preferred seats. You can select up to <strong>8</strong> seat(s) in the <strong>{{ category.categoryName }}</strong> section.
                 </p>
                 
                 <div class="space-y-4">
@@ -71,19 +71,19 @@
                  [ngClass]="selectedSeats.length > 0 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-50 pointer-events-none'">
                 <p class="text-xs font-label uppercase tracking-widest opacity-80 mb-2">Selection Status</p>
                 <div class="flex justify-between items-end">
-                    <h2 class="font-headline text-5xl font-extrabold tracking-tighter">{{ selectedSeats.length }}/{{ requiredSeats }}</h2>
+                    <h2 class="font-headline text-5xl font-extrabold tracking-tighter">{{ selectedSeats.length }}/8</h2>
                     <div class="text-right">
                         <p class="text-sm font-medium opacity-90">{{ selectedSeats.join(', ') || '--' }}</p>
                     </div>
                 </div>
                 
-                <div *ngIf="selectedSeats.length === requiredSeats" class="mt-4 bg-white/20 px-3 py-2 rounded text-sm flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">task_alt</span> Selection Complete
+                <div *ngIf="selectedSeats.length > 0" class="mt-4 bg-white/20 px-3 py-2 rounded text-sm flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">task_alt</span> Selection Confirmed
                 </div>
 
                 <button (click)="confirmSelection()"
-                    [disabled]="selectedSeats.length !== requiredSeats"
-                    [ngClass]="selectedSeats.length === requiredSeats ? 'bg-white text-primary hover:bg-opacity-90 cursor-pointer shadow-sm active:scale-95' : 'bg-white/20 text-white/50 cursor-not-allowed'"
+                    [disabled]="selectedSeats.length === 0"
+                    [ngClass]="selectedSeats.length > 0 ? 'bg-white text-primary hover:bg-opacity-90 cursor-pointer shadow-sm active:scale-95' : 'bg-white/20 text-white/50 cursor-not-allowed'"
                     class="w-full mt-6 py-4 rounded-full font-bold transition-all">
                     Continue to Passengers
                 </button>

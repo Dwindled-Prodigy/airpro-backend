@@ -20,4 +20,12 @@ export class BookingService {
     // We expect the auth interceptor to add the JWT automatically
     return this.http.post(this.apiUrl, payload);
   }
+
+  getMyBookings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/my-bookings`);
+  }
+
+  cancelBooking(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/cancel`, {});
+  }
 }

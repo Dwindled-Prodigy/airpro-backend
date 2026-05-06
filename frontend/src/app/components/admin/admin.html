@@ -36,6 +36,12 @@
                 <span class="material-symbols-outlined text-[18px]">flight</span>
                 Manage Flights
             </a>
+            <a routerLink="/admin/schedules" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
+               (click)="setPageTitle('Manage Schedules')"
+               class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">
+                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                Manage Schedules
+            </a>
             <a routerLink="/admin/bookings" routerLinkActive="bg-white/10 border-l-[3px] border-[#85B7EB] text-white font-medium"
                (click)="setPageTitle('Manage Bookings')"
                class="flex items-center gap-3 px-5 py-3 text-[13px] text-white/60 hover:bg-white/5 hover:text-white/90 transition-colors border-l-[3px] border-transparent">

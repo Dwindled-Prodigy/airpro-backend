@@ -21,6 +21,7 @@
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
                       <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Category</th>
+                      <th class="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                   </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -44,9 +45,14 @@
                               {{ user.category }}
                           </span>
                       </td>
+                      <td class="py-4 px-6 text-right">
+                          <button (click)="deleteUser(user.id)" class="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete User">
+                              <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                      </td>
                   </tr>
                   <tr *ngIf="users.length === 0">
-                      <td colspan="5" class="py-12 text-center text-slate-500 font-medium">
+                      <td colspan="6" class="py-12 text-center text-slate-500 font-medium">
                           No users found.
                       </td>
                   </tr>

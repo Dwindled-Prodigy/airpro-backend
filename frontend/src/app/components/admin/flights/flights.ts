@@ -73,4 +73,15 @@ export class AdminFlights implements OnInit {
       }
     });
   }
+
+  deleteFlight(id: number) {
+    if (confirm("Are you sure you want to delete this flight?")) {
+      this.adminData.deleteFlight(id).subscribe({
+        next: (res) => {
+          if (res.success) this.loadFlights();
+        },
+        error: (err) => alert("Cannot delete flight (it may have schedules attached).")
+      });
+    }
+  }
 }

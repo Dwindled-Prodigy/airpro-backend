@@ -3,6 +3,7 @@ import { Home } from './components/home/home';
 import { Admin } from './components/admin/admin';
 import { Dashboard } from './components/admin/dashboard/dashboard';
 import { AdminFlights } from './components/admin/flights/flights';
+import { AdminSchedules } from './components/admin/schedules/schedules';
 import { AdminCarriers } from './components/admin/carriers/carriers';
 import { AdminUsers } from './components/admin/users/users';
 import { AdminBookings } from './components/admin/bookings/bookings';
@@ -11,6 +12,7 @@ import { Seats } from './components/booking/seats/seats';
 import { Passengers } from './components/booking/passengers/passengers';
 import { Payment } from './components/booking/payment/payment';
 import { Confirmation } from './components/booking/confirmation/confirmation';
+import { UserBookings } from './components/profile/bookings/user-bookings';
 
 export const routes: Routes = [
     { path: '', component: Home },
@@ -21,6 +23,7 @@ export const routes: Routes = [
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         { path: 'dashboard', component: Dashboard },
         { path: 'flights', component: AdminFlights },
+        { path: 'schedules', component: AdminSchedules },
         { path: 'carriers', component: AdminCarriers },
         { path: 'users', component: AdminUsers },
         { path: 'bookings', component: AdminBookings }
@@ -31,5 +34,6 @@ export const routes: Routes = [
     { path: 'booking/passengers', component: Passengers },
     { path: 'booking/payment', component: Payment },
     { path: 'booking/confirmation', component: Confirmation },
+    { path: 'bookings', component: UserBookings },
     { path: '**', redirectTo: '' }
 ];

@@ -13,7 +13,6 @@ import { BookingStateService } from '../../../services/booking-state.service';
 export class Seats implements OnInit {
   flight: any;
   category: any;
-  requiredSeats: number = 1;
   selectedSeats: string[] = [];
   
   rows: number[] = Array.from({length: 30}, (_, i) => i + 1);
@@ -34,7 +33,6 @@ export class Seats implements OnInit {
     
     this.flight = this.bookingState.selectedFlight;
     this.category = this.bookingState.selectedSeatCategory;
-    this.requiredSeats = this.bookingState.passengerCount;
   }
   
   getSeatType(row: number): string {
@@ -75,8 +73,8 @@ export class Seats implements OnInit {
     if (this.isSelected(seatId)) {
       this.selectedSeats = this.selectedSeats.filter(s => s !== seatId);
     } else {
-      if (this.selectedSeats.length >= this.requiredSeats) {
-        alert(`You only need to select ${this.requiredSeats} seat(s).`);
+      if (this.selectedSeats.length >= 8) {
+        alert('You can only select a maximum of 8 seats per booking.');
         return;
       }
       this.selectedSeats.push(seatId);
@@ -84,11 +82,12 @@ export class Seats implements OnInit {
   }
 
   confirmSelection() {
-    if (this.selectedSeats.length !== this.requiredSeats) {
-      alert(`Please select exactly ${this.requiredSeats} seat(s).`);
+    if (this.selectedSeats.length === 0) {
+      alert('Please select at least 1 seat to continue.');
       return;
     }
     
+    this.bookingState.passengerCount = this.selectedSeats.length;
     this.bookingState.selectedSeatsList = this.selectedSeats;
     this.router.navigate(['/booking/passengers']);
   }

@@ -1,0 +1,113 @@
+<div class="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-slate-200/60 flex items-center justify-between bg-slate-50/50">
+        <div>
+            <h2 class="text-base font-semibold text-slate-800">Flight Schedules</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Manage departure dates and times for Master Routes.</p>
+        </div>
+        <button (click)="openModal()" class="bg-[#185FA5] hover:bg-[#124b82] text-white text-xs font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">add</span>
+            Schedule Flight
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
+                    <th class="py-3 px-6">Flight #</th>
+                    <th class="py-3 px-6">Route</th>
+                    <th class="py-3 px-6">Date</th>
+                    <th class="py-3 px-6">Departs</th>
+                    <th class="py-3 px-6">Arrives</th>
+                    <th class="py-3 px-6 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm divide-y divide-slate-100">
+                <tr *ngFor="let schedule of schedules" class="hover:bg-slate-50/50 transition-colors">
+                    <td class="py-4 px-6 font-medium text-slate-800 text-xs">{{ schedule.flight.flightNumber }}</td>
+                    <td class="py-4 px-6 text-xs text-slate-600">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-slate-800">{{ schedule.flight.origin }}</span>
+                            <span class="material-symbols-outlined text-[14px] text-slate-400">arrow_right_alt</span>
+                            <span class="font-medium text-slate-800">{{ schedule.flight.destination }}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 text-slate-600 text-xs font-medium">{{ schedule.travelDate }}</td>
+                    <td class="py-4 px-6 text-slate-600 text-xs">{{ schedule.departureTime }}</td>
+                    <td class="py-4 px-6 text-slate-600 text-xs">{{ schedule.arrivalTime }}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button (click)="deleteSchedule(schedule.id)" class="text-red-400 hover:text-red-600 transition-colors p-1">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                    </td>
+                </tr>
+                
+                <!-- Empty State -->
+                <tr *ngIf="schedules.length === 0">
+                    <td colspan="6" class="py-12 text-center text-slate-500">
+                        <span class="material-symbols-outlined text-[40px] text-slate-300 block mb-2">calendar_month</span>
+                        <p class="text-sm font-medium text-slate-600">No schedules found</p>
+                        <p class="text-xs mt-1">Schedule a master flight to make it appear in searches.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Schedule Modal -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in-up flex flex-col max-h-full">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+            <h3 class="font-semibold text-slate-800 text-sm">Schedule a Flight</h3>
+            <button (click)="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1.5">Master Flight Route</label>
+                    <select [(ngModel)]="newSchedule.flightId" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#185FA5]/20 focus:border-[#185FA5] outline-none transition-all bg-white">
+                        <option *ngFor="let flight of flights" [value]="flight.id">
+                            {{ flight.flightNumber }} ({{ flight.origin }} to {{ flight.destination }})
+                        </option>
+                    </select>
+                    <p *ngIf="flights.length === 0" class="text-[10px] text-red-500 mt-1">Please add a Master Flight Route first.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1.5">Travel Date</label>
+                    <input type="date" [(ngModel)]="newSchedule.travelDate" 
+                           class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#185FA5]/20 focus:border-[#185FA5] outline-none transition-all">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">Departure Time</label>
+                        <input type="time" [(ngModel)]="newSchedule.departureTime" 
+                               class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#185FA5]/20 focus:border-[#185FA5] outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-700 mb-1.5">Arrival Time</label>
+                        <input type="time" [(ngModel)]="newSchedule.arrivalTime" 
+                               class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#185FA5]/20 focus:border-[#185FA5] outline-none transition-all">
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-3 bg-blue-50 text-blue-800 text-xs rounded-lg border border-blue-100 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[16px]">info</span>
+                    <span>Economy, Premium Economy, and Business class inventories will be automatically generated based on the Master Flight's base price.</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50 shrink-0">
+            <button (click)="closeModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-200/50 rounded-lg transition-colors">Cancel</button>
+            <button (click)="saveSchedule()" [disabled]="flights.length === 0" [ngClass]="{'opacity-50 cursor-not-allowed': flights.length === 0}" class="px-4 py-2 text-xs font-medium text-white bg-[#185FA5] hover:bg-[#124b82] rounded-lg transition-colors shadow-sm">Create Schedule</button>
+        </div>
+    </div>
+</div>
