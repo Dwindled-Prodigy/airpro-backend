@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BookingService } from '../../../../services/booking';
-import { AuthService } from '../../../../services/auth';
+import { BookingService } from '../../../services/booking';
+import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 
 @Component({
@@ -30,7 +30,7 @@ export class UserBookings implements OnInit {
 
   loadMyBookings() {
     this.bookingService.getMyBookings().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         if (res.success) {
           // Sort bookings by bookingTime descending
           this.bookings = res.data.sort((a: any, b: any) => {
@@ -39,7 +39,7 @@ export class UserBookings implements OnInit {
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error("Error loading bookings", err);
         this.loading = false;
       }
@@ -54,16 +54,20 @@ export class UserBookings implements OnInit {
   cancelBooking(booking: any) {
     if (confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) {
       this.bookingService.cancelBooking(booking.id).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           if (res.success) {
             alert(res.message);
             this.loadMyBookings();
           }
         },
-        error: (err) => {
+        error: (err: any) => {
           alert("Failed to cancel booking: " + (err.error?.message || "Unknown error"));
         }
       });
     }
+  }
+
+  getCityCode(city: any): string {
+    return city ? String(city).substring(0, 3).toUpperCase() : '';
   }
 }

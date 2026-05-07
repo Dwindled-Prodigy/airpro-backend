@@ -1,0 +1,79 @@
+
+> airpro-angular@0.0.0 build
+> ng build
+
+[33m>[39m Building...
+[32m√[39m Building...
+Application bundle generation failed. [5.269 seconds]
+
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1: Property 'currentUserValue' does not exist on type 'AuthService'. Did you mean 'currentUser$'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/profile/bookings/user-bookings.html:8:35:
+[37m      8 │ ...         {{ authService.[32mcurrentUserValue[37m?.name?.charAt(0) | uppe...
+        ╵                            [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component UserBookings.
+
+    src/app/components/profile/bookings/user-bookings.ts:11:15:
+[37m      11 │   templateUrl: [32m'./user-bookings.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1: Property 'currentUserValue' does not exist on type 'AuthService'. Did you mean 'currentUser$'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/profile/bookings/user-bookings.html:12:78:
+[37m      12 │ ...ace-variant text-sm">{{ authService.[32mcurrentUserValue[37m?.email }}</p>
+         ╵                                        [32m~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component UserBookings.
+
+    src/app/components/profile/bookings/user-bookings.ts:11:15:
+[37m      11 │   templateUrl: [32m'./user-bookings.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG9: No overload matches this call.
+  Overload 1 of 3, '(value: string): string', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'string'.
+  Overload 2 of 3, '(value: null | undefined): null', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'null | undefined'.
+  Overload 3 of 3, '(value: string | null | undefined): string | null', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/profile/bookings/user-bookings.html:58:124:
+[37m      58 │ ...ooking.flightSchedule.flight.origin | [32mslice[37m:0:3 | uppercase }}</p>
+         ╵                                          [32m~~~~~[0m
+
+  Error occurs in the template of component UserBookings.
+
+    src/app/components/profile/bookings/user-bookings.ts:11:15:
+[37m      11 │   templateUrl: [32m'./user-bookings.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG9: No overload matches this call.
+  Overload 1 of 3, '(value: string): string', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'string'.
+  Overload 2 of 3, '(value: null | undefined): null', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'null | undefined'.
+  Overload 3 of 3, '(value: string | null | undefined): string | null', gave the following error.
+    Argument of type 'unknown[]' is not assignable to parameter of type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/profile/bookings/user-bookings.html:71:129:
+[37m      71 │ ...g.flightSchedule.flight.destination | [32mslice[37m:0:3 | uppercase }}</p>
+         ╵                                          [32m~~~~~[0m
+
+  Error occurs in the template of component UserBookings.
+
+    src/app/components/profile/bookings/user-bookings.ts:11:15:
+[37m      11 │   templateUrl: [32m'./user-bookings.html'[37m
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'isLoggedIn' does not exist on type 'AuthService'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/components/profile/bookings/user-bookings.ts:24:26:
+[37m      24 │     if (!this.authService.[32misLoggedIn[37m()) {
+         ╵                           [32m~~~~~~~~~~[0m
+
+[39m[22m

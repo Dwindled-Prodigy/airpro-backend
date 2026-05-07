@@ -55,7 +55,7 @@
                     <div class="flex-1 w-full">
                         <div class="flex items-center justify-between mb-2">
                             <div class="text-center">
-                                <p class="text-3xl font-extrabold text-slate-800">{{ booking.flightSchedule.flight.origin | slice:0:3 | uppercase }}</p>
+                                <p class="text-3xl font-extrabold text-slate-800">{{ getCityCode(booking.flightSchedule.flight.origin) }}</p>
                                 <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.flightSchedule.departureTime }}</p>
                                 <p class="text-xs text-slate-400">{{ booking.flightSchedule.travelDate | date:'MMM d, y' }}</p>
                             </div>
@@ -68,7 +68,7 @@
                             </div>
                             
                             <div class="text-center">
-                                <p class="text-3xl font-extrabold text-slate-800">{{ booking.flightSchedule.flight.destination | slice:0:3 | uppercase }}</p>
+                                <p class="text-3xl font-extrabold text-slate-800">{{ getCityCode(booking.flightSchedule.flight.destination) }}</p>
                                 <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.flightSchedule.arrivalTime }}</p>
                                 <p class="text-xs text-slate-400">{{ booking.flightSchedule.travelDate | date:'MMM d, y' }}</p>
                             </div>

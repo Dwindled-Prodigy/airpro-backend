@@ -14,6 +14,14 @@ export class AuthService {
     this.checkSession();
   }
 
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value;
+  }
+
+  get currentUserValue(): any {
+    return this.currentUserSubject.value;
+  }
+
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
