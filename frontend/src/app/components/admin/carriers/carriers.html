@@ -11,8 +11,13 @@
         </button>
     </div>
 
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-6 flex items-center justify-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-[24px]">error</span>
+        <span class="font-medium">{{ errorMessage }}</span>
+    </div>
+
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div *ngIf="!errorMessage" class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
@@ -41,7 +46,7 @@
                         <button class="text-slate-400 hover:text-[#185FA5] transition-colors p-1 mr-2">
                             <span class="material-symbols-outlined text-[18px]">edit</span>
                         </button>
-                        <button (click)="deleteCarrier(carrier.id)" class="text-red-400 hover:text-red-600 transition-colors p-1">
+                        <button (click)="confirmDelete(carrier.id)" class="text-red-400 hover:text-red-600 transition-colors p-1">
                             <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </td>
@@ -94,12 +99,39 @@
                         <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#185FA5]"></div>
                     </label>
                 </div>
+                
+                <div *ngIf="createMessage" class="p-3 bg-red-50 text-red-600 text-xs font-medium rounded-lg border border-red-100 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[16px]">error</span>
+                    <span>{{ createMessage }}</span>
+                </div>
             </div>
         </div>
         
         <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50">
             <button (click)="closeModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-200/50 rounded-lg transition-colors">Cancel</button>
             <button (click)="saveCarrier()" class="px-4 py-2 text-xs font-medium text-white bg-[#185FA5] hover:bg-[#124b82] rounded-lg transition-colors shadow-sm">Save Carrier</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="deleteCarrierId" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden animate-fade-in-up">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-[32px]">warning</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Delete Carrier?</h3>
+            <p class="text-sm text-slate-500 mb-6">Are you sure you want to delete this carrier? This action cannot be undone.</p>
+            
+            <div *ngIf="deleteMessage" class="mb-6 p-3 bg-red-50 text-red-600 text-xs font-medium rounded-lg">
+                {{ deleteMessage }}
+            </div>
+            
+            <div class="flex items-center justify-center gap-3">
+                <button (click)="cancelDelete()" class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex-1">Cancel</button>
+                <button (click)="deleteCarrier()" class="px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors flex-1 shadow-sm">Delete</button>
+            </div>
         </div>
     </div>
 </div>

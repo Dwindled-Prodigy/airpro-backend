@@ -18,7 +18,7 @@ export class Seats implements OnInit {
   rows: number[] = Array.from({length: 30}, (_, i) => i + 1);
   cols: string[] = ['A', 'B', 'C', 'aisle', 'D', 'E', 'F'];
   
-  occupiedSeats: string[] = ['2B', '3D', '3E', '5A', '7C', '8F', '10B', '12D', '15A', '20C', '22E', '25B', '28F', '16A', '16B', '21D', '21E'];
+  occupiedSeats: string[] = [];
 
   constructor(
     private bookingState: BookingStateService,
@@ -33,6 +33,41 @@ export class Seats implements OnInit {
     
     this.flight = this.bookingState.selectedFlight;
     this.category = this.bookingState.selectedSeatCategory;
+    
+    this.generateOccupiedSeats();
+  }
+
+  generateOccupiedSeats() {
+    const catName = this.category.categoryName.toLowerCase();
+    let startRow = 11, endRow = 30, totalCapacity = 120;
+    
+    if (catName.includes('business')) { 
+      startRow = 1; endRow = 5; totalCapacity = 30; 
+    } else if (catName.includes('premium')) { 
+      startRow = 6; endRow = 10; totalCapacity = 30; 
+    }
+    
+    const backendTotal = this.category.totalSeats || totalCapacity;
+    const available = this.category.availableSeats || backendTotal;
+    const backendBookedCount = Math.max(0, backendTotal - available);
+    
+    const storageKey = `booked_seats_${this.flight.flightScheduleId}`;
+    const previouslyBooked: string[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    const allValidSeats: string[] = [];
+    for (let r = startRow; r <= endRow; r++) {
+      for (const c of this.cols) {
+        const seatId = `${r}${c}`;
+        if (c !== 'aisle' && !previouslyBooked.includes(seatId)) {
+          allValidSeats.push(seatId);
+        }
+      }
+    }
+    
+    const remainingToMock = Math.max(0, backendBookedCount - previouslyBooked.length);
+    const randomMockSeats = allValidSeats.sort(() => 0.5 - Math.random()).slice(0, remainingToMock);
+    
+    this.occupiedSeats = [...previouslyBooked, ...randomMockSeats];
   }
   
   getSeatType(row: number): string {

@@ -23,6 +23,8 @@ export class AdminFlights implements OnInit {
     refundAllowed: true
   };
 
+  errorMessage = '';
+
   constructor(private adminData: AdminDataService) {}
 
   ngOnInit() {
@@ -31,17 +33,27 @@ export class AdminFlights implements OnInit {
   }
 
   loadFlights() {
-    this.adminData.getFlights().subscribe(res => {
-      if (res.success) {
-        this.flights = res.data;
+    this.adminData.getFlights().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.flights = res.data;
+        }
+      },
+      error: (err) => {
+        this.errorMessage = "Access Denied. You must be an Administrator to view flights.";
       }
     });
   }
 
   loadCarriers() {
-    this.adminData.getCarriers().subscribe(res => {
-      if (res.success) {
-        this.carriers = res.data;
+    this.adminData.getCarriers().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.carriers = res.data;
+        }
+      },
+      error: (err) => {
+        this.errorMessage = "Access Denied. You must be an Administrator to view carriers.";
       }
     });
   }
@@ -65,22 +77,48 @@ export class AdminFlights implements OnInit {
     };
   }
 
+  createMessage = '';
+
   saveFlight() {
-    this.adminData.createFlight(this.newFlight).subscribe(res => {
-      if (res.success) {
-        this.closeModal();
-        this.loadFlights();
+    this.createMessage = '';
+    this.adminData.createFlight(this.newFlight).subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.closeModal();
+          this.loadFlights();
+        }
+      },
+      error: (err) => {
+        this.createMessage = "Failed to create flight: " + (err.error?.message || "Unknown error");
       }
     });
   }
 
-  deleteFlight(id: number) {
-    if (confirm("Are you sure you want to delete this flight?")) {
-      this.adminData.deleteFlight(id).subscribe({
+  deleteFlightId: number | null = null;
+  deleteMessage = '';
+
+  confirmDelete(id: number) {
+    this.deleteFlightId = id;
+    this.deleteMessage = '';
+  }
+
+  cancelDelete() {
+    this.deleteFlightId = null;
+    this.deleteMessage = '';
+  }
+
+  deleteFlight() {
+    if (this.deleteFlightId) {
+      this.adminData.deleteFlight(this.deleteFlightId).subscribe({
         next: (res) => {
-          if (res.success) this.loadFlights();
+          if (res.status === 200) {
+            this.loadFlights();
+            this.cancelDelete();
+          }
         },
-        error: (err) => alert("Cannot delete flight (it may have schedules attached).")
+        error: (err) => {
+          this.deleteMessage = "Cannot delete flight (it may have schedules attached).";
+        }
       });
     }
   }

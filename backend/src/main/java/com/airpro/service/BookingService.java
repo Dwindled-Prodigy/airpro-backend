@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+@SuppressWarnings("null")
 @Service
 public class BookingService {
 
@@ -88,10 +89,37 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<java.util.List<Booking>> getMyBookings(String userEmail) {
+    public ApiResponse<java.util.List<com.airpro.dto.booking.MyBookingDto>> getMyBookings(String userEmail) {
         User user = userRepo.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return ApiResponse.success(bookingRepo.findByUserId(user.getId()), "Bookings retrieved successfully");
+        
+        java.util.List<Booking> bookings = bookingRepo.findByUserIdWithDetails(user.getId());
+        java.util.List<com.airpro.dto.booking.MyBookingDto> dtoList = new java.util.ArrayList<>();
+        
+        for (Booking b : bookings) {
+            com.airpro.dto.booking.MyBookingDto dto = new com.airpro.dto.booking.MyBookingDto();
+            dto.setId(b.getId());
+            dto.setStatus(b.getStatus().name());
+            dto.setBookingTime(b.getBookingTime());
+            dto.setBookingRef(b.getBookingRef());
+            dto.setSeatsBooked(b.getSeatsBooked());
+            dto.setTotalAmount(b.getTotalAmount());
+            dto.setSeatCategoryName(b.getSeatCategory().getName().name());
+            
+            com.airpro.entity.FlightSchedule fs = b.getFlightSchedule();
+            dto.setTravelDate(fs.getTravelDate());
+            dto.setDepartureTime(fs.getDepartureTime());
+            dto.setArrivalTime(fs.getArrivalTime());
+            
+            com.airpro.entity.Flight f = fs.getFlight();
+            dto.setOrigin(f.getOrigin());
+            dto.setDestination(f.getDestination());
+            dto.setFlightNumber(f.getFlightNumber());
+            
+            dtoList.add(dto);
+        }
+        
+        return ApiResponse.success(dtoList, "Bookings retrieved successfully");
     }
 
     @Transactional

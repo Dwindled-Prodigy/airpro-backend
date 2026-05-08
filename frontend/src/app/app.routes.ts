@@ -13,12 +13,15 @@ import { Passengers } from './components/booking/passengers/passengers';
 import { Payment } from './components/booking/payment/payment';
 import { Confirmation } from './components/booking/confirmation/confirmation';
 import { UserBookings } from './components/profile/bookings/user-bookings';
+import { UserProfile } from './components/profile/user-profile';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
     { path: '', component: Home },
     { 
       path: 'admin', 
       component: Admin,
+      canActivate: [adminGuard],
       children: [
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
         { path: 'dashboard', component: Dashboard },
@@ -35,5 +38,6 @@ export const routes: Routes = [
     { path: 'booking/payment', component: Payment },
     { path: 'booking/confirmation', component: Confirmation },
     { path: 'bookings', component: UserBookings },
+    { path: 'profile', component: UserProfile },
     { path: '**', redirectTo: '' }
 ];

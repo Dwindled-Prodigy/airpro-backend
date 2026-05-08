@@ -12,10 +12,7 @@
                     <p class="text-on-surface-variant text-sm">{{ authService.currentUserValue?.email }}</p>
                 </div>
             </div>
-            
             <div class="flex items-center gap-3">
-                <a routerLink="/" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Back to Search</a>
-                <button (click)="logout()" class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">Logout</button>
             </div>
         </header>
 
@@ -55,22 +52,22 @@
                     <div class="flex-1 w-full">
                         <div class="flex items-center justify-between mb-2">
                             <div class="text-center">
-                                <p class="text-3xl font-extrabold text-slate-800">{{ booking.flightSchedule.flight.origin | slice:0:3 | uppercase }}</p>
-                                <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.flightSchedule.departureTime }}</p>
-                                <p class="text-xs text-slate-400">{{ booking.flightSchedule.travelDate | date:'MMM d, y' }}</p>
+                                <p class="text-3xl font-extrabold text-slate-800">{{ getCityCode(booking.origin) }}</p>
+                                <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.departureTime }}</p>
+                                <p class="text-xs text-slate-400">{{ booking.travelDate | date:'MMM d, y' }}</p>
                             </div>
                             
                             <div class="flex-1 flex flex-col items-center px-4 relative">
-                                <p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">{{ booking.flightSchedule.flight.flightNumber }}</p>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">{{ booking.flightNumber }}</p>
                                 <div class="w-full h-[2px] bg-slate-200 relative">
                                     <span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-300 text-[20px] bg-white px-2">flight</span>
                                 </div>
                             </div>
                             
                             <div class="text-center">
-                                <p class="text-3xl font-extrabold text-slate-800">{{ booking.flightSchedule.flight.destination | slice:0:3 | uppercase }}</p>
-                                <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.flightSchedule.arrivalTime }}</p>
-                                <p class="text-xs text-slate-400">{{ booking.flightSchedule.travelDate | date:'MMM d, y' }}</p>
+                                <p class="text-3xl font-extrabold text-slate-800">{{ getCityCode(booking.destination) }}</p>
+                                <p class="text-xs font-medium text-slate-500 mt-1">{{ booking.arrivalTime }}</p>
+                                <p class="text-xs text-slate-400">{{ booking.travelDate | date:'MMM d, y' }}</p>
                             </div>
                         </div>
                     </div>
@@ -84,7 +81,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Class</p>
-                                <p class="text-sm font-bold text-slate-800">{{ booking.seatCategory.name | titlecase }}</p>
+                                <p class="text-sm font-bold text-slate-800">{{ booking.seatCategoryName | titlecase }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Passengers</p>
@@ -97,9 +94,18 @@
                         </div>
                         
                         <div class="mt-auto pt-2" *ngIf="booking.status === 'CONFIRMED'">
-                            <button (click)="cancelBooking(booking)" class="w-full px-4 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100 shadow-sm active:scale-95">
+                            <button *ngIf="confirmingCancelId !== booking.id" (click)="confirmingCancelId = booking.id" class="w-full px-4 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100 shadow-sm active:scale-95">
                                 Cancel Booking
                             </button>
+                            
+                            <!-- Inline Confirmation -->
+                            <div *ngIf="confirmingCancelId === booking.id" class="flex flex-col gap-2 p-3 bg-red-50 rounded-lg border border-red-100">
+                                <span class="text-xs text-red-600 font-bold text-center">Are you sure?</span>
+                                <div class="flex gap-2">
+                                    <button (click)="cancelBooking(booking)" class="flex-1 text-xs font-bold bg-red-600 text-white hover:bg-red-700 rounded py-1.5 transition-colors">Yes, Cancel</button>
+                                    <button (click)="confirmingCancelId = null" class="flex-1 text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 rounded py-1.5 transition-colors">Go Back</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

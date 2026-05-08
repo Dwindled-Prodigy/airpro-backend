@@ -12,7 +12,8 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Use a static key so tokens survive server restarts
+    private final Key key = Keys.hmacShaKeyFor("a-very-long-and-secure-secret-key-for-airpro-app-which-is-at-least-32-bytes-long".getBytes());
 
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();

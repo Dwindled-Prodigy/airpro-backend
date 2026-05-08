@@ -45,6 +45,7 @@ public class FlightSearchService {
                 FlightSearchResponse.SeatCategoryDto seatDto = new FlightSearchResponse.SeatCategoryDto();
                 seatDto.setSeatCategoryId(inv.getSeatCategory().getId());
                 seatDto.setCategoryName(inv.getSeatCategory().getName().name());
+                seatDto.setTotalSeats(inv.getTotalSeats());
                 seatDto.setAvailableSeats(inv.getAvailableSeats());
                 seatDto.setPrice(inv.getPrice());
                 return seatDto;

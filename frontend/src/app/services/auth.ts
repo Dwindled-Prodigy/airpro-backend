@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +9,18 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/auth';
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  public showLoginPrompt = new Subject<void>();
 
   constructor(private http: HttpClient) {
     this.checkSession();
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value;
+  }
+
+  get currentUserValue(): any {
+    return this.currentUserSubject.value;
   }
 
   login(credentials: any): Observable<any> {
@@ -32,6 +41,10 @@ export class AuthService {
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('airpro_session');
     this.currentUserSubject.next(null);
+  }
+
+  updatePassword(data: any): Observable<any> {
+    return this.http.put(`http://localhost:8080/api/users/update-password`, data);
   }
 
   private setSession(token: string) {

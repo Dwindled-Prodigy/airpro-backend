@@ -3,11 +3,14 @@ package com.airpro.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "flight_seat_inventory", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"flight_schedule_id", "seat_category_id"})
 })
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class FlightSeatInventory {
 
     @Id

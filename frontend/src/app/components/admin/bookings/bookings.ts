@@ -12,6 +12,8 @@ export class AdminBookings implements OnInit {
   bookings: any[] = [];
   isLoading = true;
 
+  errorMessage = '';
+
   constructor(private adminDataService: AdminDataService) {}
 
   ngOnInit() {
@@ -19,21 +21,45 @@ export class AdminBookings implements OnInit {
   }
 
   fetchBookings() {
-    this.adminDataService.getBookings().subscribe(res => {
-      if (res.data) {
-        this.bookings = res.data;
+    this.adminDataService.getBookings().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.bookings = res.data;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = "Access Denied. You must be an Administrator to view bookings.";
       }
-      this.isLoading = false;
     });
   }
 
-  deleteBooking(id: number) {
-    if (confirm("Are you sure you want to delete this booking?")) {
-      this.adminDataService.deleteBooking(id).subscribe({
+  deleteBookingId: number | null = null;
+  deleteMessage = '';
+
+  confirmDelete(id: number) {
+    this.deleteBookingId = id;
+    this.deleteMessage = '';
+  }
+
+  cancelDelete() {
+    this.deleteBookingId = null;
+    this.deleteMessage = '';
+  }
+
+  deleteBooking() {
+    if (this.deleteBookingId) {
+      this.adminDataService.deleteBooking(this.deleteBookingId).subscribe({
         next: (res) => {
-          if (res.success) this.fetchBookings();
+          if (res.status === 200) {
+            this.fetchBookings();
+            this.cancelDelete();
+          }
         },
-        error: (err) => alert("Cannot delete booking.")
+        error: (err) => {
+          this.deleteMessage = "Cannot delete booking.";
+        }
       });
     }
   }

@@ -19,6 +19,8 @@ export class AdminCarriers implements OnInit {
     refundAllowed: true
   };
 
+  errorMessage = '';
+
   constructor(private adminData: AdminDataService) {}
 
   ngOnInit() {
@@ -26,9 +28,14 @@ export class AdminCarriers implements OnInit {
   }
 
   loadCarriers() {
-    this.adminData.getCarriers().subscribe(res => {
-      if (res.success) {
-        this.carriers = res.data;
+    this.adminData.getCarriers().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.carriers = res.data;
+        }
+      },
+      error: (err) => {
+        this.errorMessage = "Access Denied. You must be an Administrator to view carriers.";
       }
     });
   }
@@ -42,22 +49,48 @@ export class AdminCarriers implements OnInit {
     this.newCarrier = { name: '', discountPercentage: 0, refundAllowed: true };
   }
 
+  createMessage = '';
+
   saveCarrier() {
-    this.adminData.createCarrier(this.newCarrier).subscribe(res => {
-      if (res.success) {
-        this.closeModal();
-        this.loadCarriers(); // Refresh the list
+    this.createMessage = '';
+    this.adminData.createCarrier(this.newCarrier).subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.closeModal();
+          this.loadCarriers(); // Refresh the list
+        }
+      },
+      error: (err) => {
+        this.createMessage = "Failed to create carrier: " + (err.error?.message || "Unknown error");
       }
     });
   }
 
-  deleteCarrier(id: number) {
-    if (confirm("Are you sure you want to delete this carrier?")) {
-      this.adminData.deleteCarrier(id).subscribe({
+  deleteCarrierId: number | null = null;
+  deleteMessage = '';
+
+  confirmDelete(id: number) {
+    this.deleteCarrierId = id;
+    this.deleteMessage = '';
+  }
+
+  cancelDelete() {
+    this.deleteCarrierId = null;
+    this.deleteMessage = '';
+  }
+
+  deleteCarrier() {
+    if (this.deleteCarrierId) {
+      this.adminData.deleteCarrier(this.deleteCarrierId).subscribe({
         next: (res) => {
-          if (res.success) this.loadCarriers();
+          if (res.status === 200) {
+            this.loadCarriers();
+            this.cancelDelete();
+          }
         },
-        error: (err) => alert("Cannot delete carrier (it may have flights attached).")
+        error: (err) => {
+          this.deleteMessage = "Cannot delete carrier (it may have flights attached).";
+        }
       });
     }
   }

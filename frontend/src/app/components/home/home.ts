@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css'
@@ -61,12 +62,17 @@ export class Home implements OnInit {
 
   handleSearch() {
     if (!this.isLoggedIn) {
-      alert("Please login or sign up first to search for flights.");
+      this.authService.showLoginPrompt.next();
       return;
     }
 
     if (!this.origin || !this.destination || !this.travelDate) {
       this.searchError = "Please fill in all search fields.";
+      return;
+    }
+
+    if (this.origin === this.destination) {
+      this.searchError = "Origin and destination cannot be the same.";
       return;
     }
 

@@ -62,4 +62,19 @@ public class AuthService {
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(), user.getName());
         return ApiResponse.success(token, "Login Successful");
     }
+
+    // 🔥 UPDATE PASSWORD
+    public ApiResponse<String> updatePassword(String email, com.airpro.dto.UpdatePasswordRequest request) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepo.save(user);
+
+        return ApiResponse.success("Success", "Password updated successfully");
+    }
 }

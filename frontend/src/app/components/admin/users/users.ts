@@ -12,6 +12,8 @@ export class AdminUsers implements OnInit {
   users: any[] = [];
   isLoading = true;
 
+  errorMessage = '';
+
   constructor(private adminDataService: AdminDataService) {}
 
   ngOnInit() {
@@ -19,21 +21,45 @@ export class AdminUsers implements OnInit {
   }
 
   fetchUsers() {
-    this.adminDataService.getUsers().subscribe(res => {
-      if (res.data) {
-        this.users = res.data;
+    this.adminDataService.getUsers().subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.users = res.data;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = "Access Denied. You must be an Administrator to view users.";
       }
-      this.isLoading = false;
     });
   }
 
-  deleteUser(id: number) {
-    if (confirm("Are you sure you want to delete this user?")) {
-      this.adminDataService.deleteUser(id).subscribe({
+  deleteUserId: number | null = null;
+  deleteMessage = '';
+
+  confirmDelete(id: number) {
+    this.deleteUserId = id;
+    this.deleteMessage = '';
+  }
+
+  cancelDelete() {
+    this.deleteUserId = null;
+    this.deleteMessage = '';
+  }
+
+  deleteUser() {
+    if (this.deleteUserId) {
+      this.adminDataService.deleteUser(this.deleteUserId).subscribe({
         next: (res) => {
-          if (res.success) this.fetchUsers();
+          if (res.status === 200) {
+            this.fetchUsers();
+            this.cancelDelete();
+          }
         },
-        error: (err) => alert("Cannot delete user (they may have bookings attached).")
+        error: (err) => {
+          this.deleteMessage = "Cannot delete user (they may have bookings attached).";
+        }
       });
     }
   }

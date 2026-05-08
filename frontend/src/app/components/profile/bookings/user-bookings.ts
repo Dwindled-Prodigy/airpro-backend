@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BookingService } from '../../../../services/booking';
-import { AuthService } from '../../../../services/auth';
+import { BookingService } from '../../../services/booking';
+import { AuthService } from '../../../services/auth';
 import { Router } from '@angular/router';
 
 @Component({
@@ -30,8 +30,8 @@ export class UserBookings implements OnInit {
 
   loadMyBookings() {
     this.bookingService.getMyBookings().subscribe({
-      next: (res) => {
-        if (res.success) {
+      next: (res: any) => {
+        if (res.status === 200 || res.data) {
           // Sort bookings by bookingTime descending
           this.bookings = res.data.sort((a: any, b: any) => {
             return new Date(b.bookingTime).getTime() - new Date(a.bookingTime).getTime();
@@ -39,7 +39,7 @@ export class UserBookings implements OnInit {
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error("Error loading bookings", err);
         this.loading = false;
       }
@@ -51,19 +51,34 @@ export class UserBookings implements OnInit {
     this.router.navigate(['/']);
   }
 
+  confirmingCancelId: number | null = null;
+
   cancelBooking(booking: any) {
-    if (confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) {
-      this.bookingService.cancelBooking(booking.id).subscribe({
-        next: (res) => {
-          if (res.success) {
-            alert(res.message);
-            this.loadMyBookings();
+    this.bookingService.cancelBooking(booking.id).subscribe({
+      next: (res: any) => {
+        if (res.status === 200) {
+          // Clear local storage visual seat caches so seats appear restored in the seat map
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('booked_seats_')) {
+              keysToRemove.push(key);
+            }
           }
-        },
-        error: (err) => {
-          alert("Failed to cancel booking: " + (err.error?.message || "Unknown error"));
+          keysToRemove.forEach(k => localStorage.removeItem(k));
+          
+          this.confirmingCancelId = null;
+          this.loadMyBookings();
         }
-      });
-    }
+      },
+      error: (err: any) => {
+        alert("Failed to cancel booking: " + (err.error?.message || "Unknown error"));
+        this.confirmingCancelId = null;
+      }
+    });
+  }
+
+  getCityCode(city: any): string {
+    return city ? String(city).substring(0, 3).toUpperCase() : '';
   }
 }

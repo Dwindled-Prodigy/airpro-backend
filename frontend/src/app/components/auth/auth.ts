@@ -64,20 +64,41 @@ export class Auth {
       error: (err) => {
         if (err.error && err.error.message) {
           this.errorMsg = err.error.message;
-        } else if (err.status === 401 || err.status === 403) {
-          this.errorMsg = "Invalid email or password.";
         } else {
-          this.errorMsg = 'Network error. Please try again.';
+          this.errorMsg = "Invalid email or password.";
         }
-        alert(this.errorMsg);
       }
     });
   }
 
   handleSignup() {
     this.errorMsg = '';
+    
+    if (!this.signupData.name || !this.signupData.email || !this.signupData.password || !this.signupData.confirm) {
+      this.errorMsg = "Please fill in all fields.";
+      return;
+    }
+
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(this.signupData.name)) {
+      this.errorMsg = "Name must contain only letters and spaces.";
+      return;
+    }
+
     if (this.signupData.password !== this.signupData.confirm) {
       this.errorMsg = "Passwords do not match";
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.signupData.email)) {
+      this.errorMsg = "Please enter a valid email address.";
+      return;
+    }
+    
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(this.signupData.password)) {
+      this.errorMsg = "Password must be at least 8 characters long and include an uppercase letter, lowercase letter, number, and special character.";
       return;
     }
     

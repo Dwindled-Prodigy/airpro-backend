@@ -22,6 +22,7 @@ public class FlightSearchResponse {
     public static class SeatCategoryDto {
         private Long seatCategoryId;
         private String categoryName;
+        private Integer totalSeats;
         private Integer availableSeats;
         private Double price;
     }

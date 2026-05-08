@@ -25,7 +25,7 @@ public class BookingController {
     }
 
     @GetMapping("/my-bookings")
-    public ResponseEntity<ApiResponse<java.util.List<com.airpro.entity.Booking>>> getMyBookings(Authentication authentication) {
+    public ResponseEntity<ApiResponse<java.util.List<com.airpro.dto.booking.MyBookingDto>>> getMyBookings(Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok(bookingService.getMyBookings(email));
     }

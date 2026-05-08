@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("null")
 @Service
 @Transactional
 public class AdminService {

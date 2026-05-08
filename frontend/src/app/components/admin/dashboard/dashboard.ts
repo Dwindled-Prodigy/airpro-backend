@@ -16,6 +16,8 @@ export class Dashboard implements OnInit {
   totalCarriers = 0;
   isLoading = true;
 
+  errorMessage = '';
+
   constructor(private adminDataService: AdminDataService) {}
 
   ngOnInit() {
@@ -23,8 +25,9 @@ export class Dashboard implements OnInit {
   }
 
   fetchDashboardStats() {
-    // We will make parallel requests to get counts
     let completedRequests = 0;
+    let hasError = false;
+
     const checkLoading = () => {
       completedRequests++;
       if (completedRequests === 4) {
@@ -32,27 +35,38 @@ export class Dashboard implements OnInit {
       }
     };
 
-    this.adminDataService.getUsers().subscribe(res => {
-      if (res.data) this.totalUsers = res.data.length;
-      checkLoading();
-    });
-
-    this.adminDataService.getBookings().subscribe(res => {
-      if (res.data) {
-        this.totalBookings = res.data.length;
-        this.totalRevenue = res.data.reduce((sum: number, booking: any) => sum + (booking.totalAmount || 0), 0);
+    const handleError = (err: any) => {
+      if (!hasError) {
+        hasError = true;
+        this.isLoading = false;
+        this.errorMessage = "Access Denied. You must be an Administrator to view this dashboard.";
       }
-      checkLoading();
+    };
+
+    this.adminDataService.getUsers().subscribe({
+      next: (res) => { if (res.data) this.totalUsers = res.data.length; checkLoading(); },
+      error: handleError
     });
 
-    this.adminDataService.getFlights().subscribe(res => {
-      if (res.data) this.totalFlights = res.data.length;
-      checkLoading();
+    this.adminDataService.getBookings().subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.totalBookings = res.data.length;
+          this.totalRevenue = res.data.reduce((sum: number, booking: any) => sum + (booking.totalAmount || 0), 0);
+        }
+        checkLoading();
+      },
+      error: handleError
     });
 
-    this.adminDataService.getCarriers().subscribe(res => {
-      if (res.data) this.totalCarriers = res.data.length;
-      checkLoading();
+    this.adminDataService.getFlights().subscribe({
+      next: (res) => { if (res.data) this.totalFlights = res.data.length; checkLoading(); },
+      error: handleError
+    });
+
+    this.adminDataService.getCarriers().subscribe({
+      next: (res) => { if (res.data) this.totalCarriers = res.data.length; checkLoading(); },
+      error: handleError
     });
   }
 }

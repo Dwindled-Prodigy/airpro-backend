@@ -22,6 +22,7 @@ export class Payment implements OnInit {
   isProcessing = false;
   paymentError = '';
   showErrors = false;
+  showConfirmModal = false;
 
   constructor(
     public bookingState: BookingStateService,
@@ -38,13 +39,62 @@ export class Payment implements OnInit {
     this.totalAmount = this.bookingState.getTotalFare();
   }
   
+  formatCardNumber(event: any) {
+    let value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 16) {
+      value = value.substring(0, 16);
+    }
+    let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+    this.cardNumber = formatted;
+  }
+
+  formatExpiry(event: any) {
+    let value = event.target.value.replace(/\D/g, '');
+    if (value.length > 4) value = value.substring(0, 4);
+    if (value.length >= 3) {
+      this.expiry = value.substring(0, 2) + '/' + value.substring(2, 4);
+    } else if (value.length >= 2 && event.inputType !== 'deleteContentBackward') {
+       this.expiry = value.substring(0, 2) + '/';
+    } else {
+      this.expiry = value;
+    }
+  }
+
+  formatCvv(event: any) {
+     let value = event.target.value.replace(/\D/g, '');
+     if (value.length > 4) value = value.substring(0, 4);
+     this.cvv = value;
+  }
+
   isValidCard(): boolean {
-    // Basic 16 digit check ignoring spaces
-    return /^\d{16}$/.test(this.cardNumber.replace(/\s/g, ''));
+    let value = this.cardNumber.replace(/\D/g, '');
+    if (value.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < value.length; i++) {
+      let intVal = parseInt(value.substr(i, 1));
+      if (i % 2 === 0) {
+        intVal *= 2;
+        if (intVal > 9) intVal = 1 + (intVal % 10);
+      }
+      sum += intVal;
+    }
+    return sum % 10 === 0;
   }
   
   isValidExpiry(): boolean {
-    return /^(0[1-9]|1[0-2])\/\d{2}$/.test(this.expiry);
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(this.expiry)) return false;
+    const [month, year] = this.expiry.split('/');
+    const expDate = new Date(2000 + parseInt(year), parseInt(month) - 1);
+    const today = new Date();
+    
+    // Set to last day of expiry month
+    expDate.setMonth(expDate.getMonth() + 1);
+    expDate.setDate(0);
+    
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 10);
+    
+    return expDate >= today && expDate <= maxDate;
   }
   
   isValidCvv(): boolean {
@@ -57,6 +107,34 @@ export class Payment implements OnInit {
     if (!this.isValidCard() || !this.isValidExpiry() || !this.isValidCvv() || !this.nameOnCard) {
       this.paymentError = 'Please fix the highlighted payment details.';
       return;
+    }
+
+    const storageKey = `booked_seats_${this.bookingState.selectedFlight.flightScheduleId}`;
+    const previouslyBooked = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    const alreadyBooked = this.bookingState.selectedSeatsList.some(s => previouslyBooked.includes(s));
+    if (alreadyBooked) {
+        this.paymentError = "One or more of your selected seats have just been booked by someone else. Please go back and select different seats.";
+        return;
+    }
+
+    // Show the confirmation modal instead of processing immediately
+    this.paymentError = '';
+    this.showConfirmModal = true;
+  }
+
+  confirmPayment() {
+    this.showConfirmModal = false;
+    this.isProcessing = true;
+    this.paymentError = '';
+
+    const storageKey = `booked_seats_${this.bookingState.selectedFlight.flightScheduleId}`;
+    const previouslyBooked = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    
+    const alreadyBooked = this.bookingState.selectedSeatsList.some(s => previouslyBooked.includes(s));
+    if (alreadyBooked) {
+        this.paymentError = "One or more of your selected seats have just been booked by someone else. Please go back and select different seats.";
+        return;
     }
 
     this.isProcessing = true;
@@ -72,6 +150,10 @@ export class Payment implements OnInit {
         next: (res) => {
           this.isProcessing = false;
           if (res.status === 200 || res.status === 201 || res.data) {
+            // Save newly booked seats to local storage mock
+            const newBooked = [...previouslyBooked, ...this.bookingState.selectedSeatsList];
+            localStorage.setItem(storageKey, JSON.stringify(newBooked));
+
             // Save PNR to state
             this.bookingState.selectedFlight.pnr = res.data?.pnr || 'PNR-SUCCESS';
             this.router.navigate(['/booking/confirmation']);

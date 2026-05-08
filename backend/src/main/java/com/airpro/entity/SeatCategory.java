@@ -3,9 +3,12 @@ package com.airpro.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "seat_categories")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SeatCategory {
 
     @Id
